@@ -11,4 +11,5 @@ Repo for some example datasets
   * Points
   * Images
   * Regions
+* Have a readme.md with prose
 
