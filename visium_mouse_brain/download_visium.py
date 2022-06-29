@@ -1,45 +1,11 @@
 #!/usr/bin/env python3
 
 import os
-import urllib.request
-import zipfile
 import shutil
 
-from tqdm import tqdm
 import scanpy as sc
 
-
-class TqdmDownload(tqdm):
-    def __init__(self, *args, **kwargs):
-        kwargs = dict(kwargs)
-        kwargs.update({"unit": "B", "unit_scale": True, "unit_divisor": 1024})
-        super().__init__(*args, **kwargs)
-
-    def update_to(self, nblocks=1, blocksize=1, total=-1):
-        self.total = total
-        self.update(nblocks * blocksize - self.n)
-
-
-def download(url, outfile, desc):
-    with TqdmDownload(desc="downloading " + desc) as t:
-        urllib.request.urlretrieve(url, outfile, t.update_to)
-
-
-def unzip(file, outdir=None, files=None, rm=True):
-    if outdir is None:
-        outdir = os.getcwd()
-    else:
-        os.makedirs(outdir, exist_ok=True)
-    zfile = zipfile.ZipFile(file)
-    if files is not None:
-        for f in files:
-            zfile.extract(f, outdir)
-    else:
-        zfile.extractall(outdir)
-    zfile.close()
-    if rm:
-        os.unlink(file)
-
+from utils import download, unzip
 
 os.makedirs("images")
 
