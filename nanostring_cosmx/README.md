@@ -1,5 +1,8 @@
-# Nanostring Data 
-The file `nanostring.py` downloads the data and creates a two output files: 
+# Requirements
+`pip install scanpy pyarrow`
+
+# Nanostring CosMx Data 
+The file `nanostring_cosmx.py` downloads the data and creates a two output files: 
 - basic adata object (`nanostring_lung5_rep2.h5ad`) 
 - Single gene points table (`nanostring_lung5_rep2_single_genes.parquet`)
 
