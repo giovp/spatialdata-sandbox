@@ -128,5 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Others
+# IDEs
 .idea/
+
+# ignore data
+*.h5ad
+*.png
+data/
