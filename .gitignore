@@ -133,5 +133,6 @@ dmypy.json
 
 # ignore data
 *.h5ad
+*.tiff
 *.png
 data/
