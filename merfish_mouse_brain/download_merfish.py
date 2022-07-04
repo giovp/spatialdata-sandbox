@@ -27,6 +27,7 @@ PLOT = False
 ##
 print(f"os.getcwd() = {os.getcwd()}")
 merfish_dir = Path().resolve() / "merfish_mouse_brain"
+merfish_dir.mkdir(parents=True, exist_ok=True)
 assert merfish_dir.exists()
 raw = merfish_dir / "raw"
 raw.mkdir(parents=True, exist_ok=True)
@@ -161,7 +162,7 @@ cvs = datashader.Canvas(plot_width=raster_w, plot_height=raster_h)
 agg = cvs.points(df, x="x_um", y="y_um", agg=datashader.count())
 # img = datashader.tf.shade(agg)
 # raster = img.to_numpy()
-raster = agg.to_numpy()
+raster = agg.values
 raster = raster.astype(np.float64)
 raster /= raster.max()
 # raster = np.flipud(raster)
