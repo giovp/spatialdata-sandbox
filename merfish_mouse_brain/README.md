@@ -14,3 +14,5 @@ Processed data saved in
 - `processed/image_transorm.json` translation and scaling parameters for aligning the image with the rest of the coordinates
 
 Set in the code `PLOT = True` for some basic visualization of the data.
+
+The file `write_zarr.py` writes the building blocks in ome-ngff format.
