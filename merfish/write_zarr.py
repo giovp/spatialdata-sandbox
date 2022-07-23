@@ -59,6 +59,6 @@ write_table_regions(
 )
 points_group = root.create_group(name="points")
 write_table_points(
-    group=tables_group,
+    group=points_group,
     adata=transcripts,
 )

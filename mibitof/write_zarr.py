@@ -16,7 +16,7 @@ libraries = ["point8", "point16", "point23"]
 
 table = ad.concat(
     [ad.read(path_read / f"{lib}_table.h5ad") for lib in libraries],
-    label="region_key",
+    label="fov",
     keys=libraries,
 )
 
@@ -50,4 +50,6 @@ tables_group = root.create_group(name="tables")
 write_table_regions(
     group=tables_group,
     adata=table,
+    region=libraries,
+    region_key="fov",
 )
