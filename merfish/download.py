@@ -26,7 +26,7 @@ PLOT = False
 
 ##
 print(f"os.getcwd() = {os.getcwd()}")
-merfish_dir = Path().resolve() / "merfish_mouse_brain"
+merfish_dir = Path().resolve() / "data"
 merfish_dir.mkdir(parents=True, exist_ok=True)
 assert merfish_dir.exists()
 raw = merfish_dir / "raw"

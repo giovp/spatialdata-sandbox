@@ -1,0 +1,5 @@
+scanpy
+pyarrow
+imagecodecs
+imageio
+git+https://github.com/kevinyamauchi/ome-ngff-tables-prototype@main
