@@ -1,5 +1,5 @@
 # Requirements
-`pip install scanpy pyarrow`
+`pip install scanpy pyarrow imagecodecs`
 
 # Nanostring CosMx Data 
 The file `nanostring_cosmx.py` downloads the data and creates a two output files: 
