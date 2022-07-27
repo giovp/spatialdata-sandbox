@@ -7,7 +7,8 @@ from anndata import AnnData
 from pathlib import Path
 from scipy.sparse import csr_matrix
 
-nanostring_dir = Path().resolve() / "nanostring_cosmx"
+nanostring_dir = Path().resolve() / "data"
+nanostring_dir.mkdir(parents=True, exist_ok=True)
 assert nanostring_dir.exists()
 path = nanostring_dir / "data_lung5_rep2"
 
