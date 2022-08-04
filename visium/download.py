@@ -5,6 +5,10 @@ import shutil
 from pathlib import Path
 import scanpy as sc
 
+import sys
+
+sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
+
 from utils import download, unzip
 
 main_dir = Path().resolve() / "data"

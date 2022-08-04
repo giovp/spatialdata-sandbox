@@ -11,6 +11,11 @@ nanostring_dir = Path().resolve() / "data"
 nanostring_dir.mkdir(parents=True, exist_ok=True)
 assert nanostring_dir.exists()
 path = nanostring_dir / "data_lung5_rep2"
+# if pyarrow is available, better to fail now, than after minutes of downloads
+import pyarrow
+
+# to prevent the unused import to be accidentally removed by PyCharm's "optimize imports"
+_ = pyarrow.__path__
 
 if not path.exists():
     url = "https://nanostring-public-share.s3.us-west-2.amazonaws.com/SMI-Compressed/Lung5_Rep2/Lung5_Rep2+SMI+Flat+data.tar.gz"

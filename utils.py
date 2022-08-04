@@ -31,7 +31,18 @@ def download(url, outfile, desc):
         with TqdmDownload(desc="downloading " + desc) as t:
             urllib.request.urlretrieve(url, outfile, t.update_to)
     else:
-        subprocess.check_call(["aria2c", "-x", "4", "-o", outfile, url])
+        subprocess.check_call(
+            [
+                "aria2c",
+                "-x",
+                "4",
+                "--dir",
+                os.path.dirname(outfile),
+                "-o",
+                os.path.basename(outfile),
+                url,
+            ]
+        )
 
 
 def unzip(file, outdir=None, files=None, rm=True):
@@ -48,4 +59,3 @@ def unzip(file, outdir=None, files=None, rm=True):
     zfile.close()
     if rm:
         os.unlink(file)
-

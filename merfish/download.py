@@ -17,6 +17,9 @@ import math
 import datashader
 import imageio
 from pathlib import Path
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
+
 from utils import download
 
 plt.style.use("dark_background")

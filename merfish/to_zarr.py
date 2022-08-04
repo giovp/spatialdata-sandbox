@@ -13,8 +13,7 @@ import ngff_tables_prototype as viz
 
 ##
 print(f"os.getcwd() = {os.getcwd()}")
-path = Path().resolve() / "merfish"
-assert path.exists()
+path = Path().resolve()
 path_read = path / "data" / "processed"
 path_write = path / "data.zarr"
 
