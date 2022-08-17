@@ -39,7 +39,7 @@ del regions.X
 transform = sd.Transform(translation=image_translation, scale_factors=image_scale_factors)
 
 sdata = sd.SpatialData(
-    tables={'cells': expression},
+    table=expression,
     points={"cells": regions, 'single_molecule': single_molecule},
     images={"rasterized": img},
     images_transform={"rasterized": transform},

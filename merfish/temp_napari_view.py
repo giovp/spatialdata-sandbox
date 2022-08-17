@@ -19,4 +19,4 @@ if not str(path).endswith('merfish'):
 path /= "data.zarr"
 ##
 sdata = sd.SpatialData.read(path)
-sdata
+print(sdata)
