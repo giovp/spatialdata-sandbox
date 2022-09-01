@@ -20,3 +20,5 @@ path /= "data.zarr"
 ##
 sdata = sd.SpatialData.read(path)
 print(sdata)
+
+##

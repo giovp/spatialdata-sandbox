@@ -4,6 +4,7 @@ import shutil
 import json
 import numpy as np
 import scanpy as sc
+import anndata as ad
 import os
 import imageio
 import shutil
@@ -23,7 +24,11 @@ path_write = path / "data.zarr"
 ##
 cells = sc.read_h5ad(path_read / "cells.h5ad")
 img = np.asarray(imageio.imread(path_read / "image.png"))
-single_molecule = sc.read_h5ad(path_read / "single_molecule.h5ad")
+adata = sc.read_h5ad(path_read / "single_molecule.h5ad")
+single_molecule = ad.AnnData(shape=(len(adata), 0))
+single_molecule.obsm['spatial'] = adata.X
+single_molecule.obsm['spatial_type'] = adata.obsm['cell_type']
+
 j = json.load(open(path_read / "image_transform.json", "r"))
 image_translation = np.array([j["translation_x"], j["translation_y"]])
 image_scale_factors = np.array([j["scale_factor_x"], j["scale_factor_y"]])
@@ -32,8 +37,9 @@ expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
 
-regions = cells.copy()
-del regions.X
+regions = ad.AnnData(shape=(len(cells.obsm['spatial']), 0))
+regions.obsm['region_radius'] = cells.obsm['region_radius']
+regions.obsm['spatial'] = cells.obsm['spatial']
 
 ##
 transform = sd.Transform(translation=image_translation, scale_factors=image_scale_factors)
