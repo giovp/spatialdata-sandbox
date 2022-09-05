@@ -1,16 +1,12 @@
 ##
-import shutil
-
 import json
 import numpy as np
 import scanpy as sc
 import anndata as ad
-import os
 import imageio
 import shutil
 from pathlib import Path
 import spatialdata as sd
-import ngff_tables_prototype as viz
 
 ##
 path = Path().resolve()
@@ -61,5 +57,6 @@ if path_write.exists():
     shutil.rmtree(path_write)
 sdata.write(path_write)
 print('done')
+print('view with "python -m napari_spatialdata view spatialdata-sandbox/merfish/data.zarr"')
 ##
 
