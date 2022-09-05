@@ -36,10 +36,14 @@ image_scale_factors = np.array([j["scale_factor_x"], j["scale_factor_y"]])
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
+expression.obs['regions_key'] = 'cells'
+expression.obs['instance_key'] = 'cell_id'
+expression.obs['cell_id'] = np.arange(len(expression))
 
 regions = ad.AnnData(shape=(len(cells.obsm['spatial']), 0))
 regions.obsm['region_radius'] = cells.obsm['region_radius']
 regions.obsm['spatial'] = cells.obsm['spatial']
+regions.obs['cell_id'] = np.arange(len(regions))
 
 ##
 transform = sd.Transform(translation=image_translation, scale_factors=image_scale_factors)
