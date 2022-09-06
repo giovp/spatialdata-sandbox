@@ -1,0 +1,74 @@
+##
+import json
+import numpy as np
+import scanpy as sc
+import anndata as ad
+import imageio
+import shutil
+from pathlib import Path
+import spatialdata as sd
+import re
+import os
+from tqdm import tqdm
+
+##
+
+path = Path().resolve()
+# luca's workaround for pycharm
+if not str(path).endswith("visium"):
+    path /= "visium"
+path_read = path / "data"
+path_write = path / "data.zarr"
+
+libraries = [re.sub(".h5ad", "", i) for i in os.listdir(path_read / "tables")]
+
+##
+table_list = []
+images = {}
+points = {}
+images_transform = {}
+for lib in tqdm(libraries, desc='loading visium libraries'):
+    table = ad.read(path_read / "tables" / f"{lib}.h5ad")
+    lib_keys = list(table.uns["spatial"].keys())
+    assert len(lib_keys) == 1
+    lib_key = lib_keys[0]
+    img = table.uns["spatial"][lib_key]["images"]["hires"]
+    images[lib] = img
+
+    radius = table.uns["spatial"][lib_key]["scalefactors"]["spot_diameter_fullres"] / 2
+    shape_region = ad.AnnData(
+        shape=(len(table), 0),
+        obsm={"spatial": table.obsm["spatial"], "region_radius": np.array([radius] * len(table))},
+    )
+    shape_region.obs['visium_spot_id'] = np.arange(len(table))
+    points[lib] = shape_region
+    scale_factors = np.array([1.] + [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2)
+    transform = sd.Transform(scale_factors=scale_factors)
+    images_transform[lib] = transform
+
+    table.uns.pop("spatial")
+    table.var_names_make_unique()
+    table.obs['regions_key'] = lib
+    table.obs['instance_key'] = 'visium_spot_id'
+    table.obs['visium_spot_id'] = np.arange(len(table))
+    table_list.append(table)
+
+table = ad.concat(
+    table_list,
+    label="library",
+    keys=libraries,
+)
+
+sdata = sd.SpatialData(table=table,
+                       images=images,
+                       images_transform=images_transform,
+                       points=points)
+print(sdata)
+
+##
+if path_write.exists():
+    shutil.rmtree(path_write)
+sdata.write(path_write)
+print('done')
+print(f'view with "python -m spatialdata view data.zarr"')
+

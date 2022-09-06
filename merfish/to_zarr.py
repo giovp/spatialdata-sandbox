@@ -57,6 +57,6 @@ if path_write.exists():
     shutil.rmtree(path_write)
 sdata.write(path_write)
 print('done')
-print('view with "python -m napari_spatialdata view spatialdata-sandbox/merfish/data.zarr"')
+print(f'view with "python -m napari_spatialdata view data.zarr"')
 ##
 
