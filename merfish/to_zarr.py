@@ -13,6 +13,7 @@ path = Path().resolve()
 # luca's workaround for pycharm
 if not str(path).endswith('merfish'):
     path /= 'merfish'
+    assert path.exists()
 ##
 path_read = path / "data" / "processed"
 path_write = path / "data.zarr"
@@ -32,8 +33,8 @@ image_scale_factors = np.array([j["scale_factor_x"], j["scale_factor_y"]])
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
-expression.obs['regions_key'] = 'cells'
-expression.obs['instance_key'] = 'cell_id'
+expression.uns['mapping_info'] = {'regions': 'cells', 'regions_key': 'regions_id', 'instance_key': 'cell_id'}
+expression.obs['regions_id'] = 'cells'
 expression.obs['cell_id'] = np.arange(len(expression))
 
 regions = ad.AnnData(shape=(len(cells.obsm['spatial']), 0))
