@@ -7,6 +7,7 @@ import imageio
 import shutil
 from pathlib import Path
 import spatialdata as sd
+from spatialdata._core import Polygons
 
 ##
 path = Path().resolve()
@@ -43,6 +44,17 @@ regions.obsm['spatial'] = cells.obsm['spatial']
 regions.obs['cell_id'] = np.arange(len(regions))
 
 ##
+adata_polygons = Polygons.anndata_from_geojson(path_read / "anatomical.geojson")
+
+# brain_layers = {}
+# for layer in layers["geometries"]:
+#     assert layer["type"] == "Polygon"
+#     name = layer["name"]
+#     coordinates = np.array(layer["coordinates"])
+#     coordinates = np.squeeze(coordinates, 0)
+#     brain_layers[name] = coordinates
+
+##
 transform = sd.Transform(translation=image_translation, scale_factors=image_scale_factors)
 
 sdata = sd.SpatialData(
@@ -50,6 +62,7 @@ sdata = sd.SpatialData(
     points={"cells": regions, 'single_molecule': single_molecule},
     images={"rasterized": img},
     images_transform={"rasterized": transform},
+    polygons={"anatomical": adata_polygons}
 )
 print(sdata)
 
