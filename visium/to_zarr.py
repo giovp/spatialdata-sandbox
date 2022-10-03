@@ -50,7 +50,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
         [1.0]
         + [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2
     )
-    transform = sd.Transform(scale_factors=scale_factors)
+    transform = sd.Scale(scale=scale_factors)
     images_transform[lib] = transform
 
     table.uns.pop("spatial")
@@ -81,6 +81,5 @@ print(sdata)
 if path_write.exists():
     shutil.rmtree(path_write)
 sdata.write(path_write)
-s = sdata.read(path_write)
 print("done")
 print(f'view with "python -m spatialdata view data.zarr"')

@@ -55,13 +55,17 @@ adata_polygons = Polygons.anndata_from_geojson(path_read / "anatomical.geojson")
 #     brain_layers[name] = coordinates
 
 ##
-transform = sd.Transform(translation=image_translation, scale_factors=image_scale_factors)
+translation = sd.Translation(translation=image_translation)
+scale = sd.Scale(scale=image_scale_factors)
+# these are equivalent
+# composed = sd.compose_transformations(scale, translation)
+composed = sd.compose_transformations(scale, translation).to_affine()
 
 sdata = sd.SpatialData(
     table=expression,
     points={"cells": regions, 'single_molecule': single_molecule},
     images={"rasterized": img},
-    images_transform={"rasterized": transform},
+    images_transform={"rasterized": composed},
     polygons={"anatomical": adata_polygons}
 )
 print(sdata)
