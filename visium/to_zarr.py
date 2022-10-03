@@ -27,7 +27,7 @@ libraries = [re.sub(".h5ad", "", i) for i in os.listdir(path_read / "tables")]
 table_list = []
 images = {}
 points = {}
-images_transform = {}
+images_transforms = {}
 for lib in tqdm(libraries, desc="loading visium libraries"):
     table = ad.read(path_read / "tables" / f"{lib}.h5ad")
     lib_keys = list(table.uns["spatial"].keys())
@@ -51,7 +51,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
         + [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2
     )
     transform = sd.Scale(scale=scale_factors)
-    images_transform[lib] = transform
+    images_transforms[lib] = transform
 
     table.uns.pop("spatial")
     table.var_names_make_unique()
@@ -73,7 +73,7 @@ table.uns["mapping_info"] = {
 }
 
 sdata = sd.SpatialData(
-    table=table, images=images, images_transform=images_transform, points=points
+    table=table, images=images, images_transforms=images_transforms, points=points
 )
 print(sdata)
 
