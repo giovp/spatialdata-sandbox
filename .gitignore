@@ -142,3 +142,6 @@ data
 data.zarr
 data_*
 mouse_brain_visium_wo_cloupe_data/
+raw/
+processed/
+*.zarr

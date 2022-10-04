@@ -15,4 +15,4 @@ Processed data saved in
 
 Set in the code `PLOT = True` for some basic visualization of the data.
 
-The file `write_zarr.py` writes the building blocks in ome-ngff format.
+Download the data with `download.py`, then save it to the OME-NGFF format with `write_zarr.py`.
