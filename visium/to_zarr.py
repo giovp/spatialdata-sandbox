@@ -73,7 +73,22 @@ table.uns["mapping_info"] = {
 }
 
 sdata = sd.SpatialData(
-    table=table, images=images, images_transforms=images_transforms, points=points
+    table=table, images=images, points=points,
+    images_axes={lib: ("c", "y", "x") for lib in libraries},
+    transformations={(f"/images/{lib}", lib): images_transforms[lib] for lib in libraries} | {
+        (f"/points/{lib}", lib): None for lib in libraries
+    },
+    coordinate_systems=[
+        {
+            "name": lib,
+            "axes": [
+                {"name": "c", "type": "channel"},
+                {"name": "x", "type": "space", "unit": "micrometer"},
+                {"name": "y", "type": "space", "unit": "micrometer"},
+            ]
+        }
+        for lib in libraries
+    ]
 )
 print(sdata)
 
@@ -83,3 +98,6 @@ if path_write.exists():
 sdata.write(path_write)
 print("done")
 print(f'view with "python -m spatialdata view data.zarr"')
+sdata = sd.SpatialData.read(path_write)
+print(sdata)
+print('read')

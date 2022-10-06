@@ -78,12 +78,12 @@ sdata = sd.SpatialData(
     points={"cells": regions, "single_molecule": single_molecule},
     images={"rasterized": img},
     polygons={"anatomical": adata_polygons},
-    images_axes={"rasterized": "yx"},
+    images_axes={"rasterized": ("y", "x")},
     transformations={
-        ("images/rasterized", "global"): composed,
-        ("points/cells", "global"): sd.Identity(),
-        ("points/single_molecule", "global"): sd.Identity(),
-        ("polygons/anatomical", "global"): sd.Identity(),
+        ("/images/rasterized", "global"): composed,
+        ("/points/cells", "global"): sd.Identity(),
+        ("/points/single_molecule", "global"): sd.Identity(),
+        ("/polygons/anatomical", "global"): sd.Identity(),
     },
     coordinate_systems=[
         {
@@ -103,3 +103,6 @@ sdata.write(path_write)
 print("done")
 print(f'view with "python -m napari_spatialdata view data.zarr"')
 ##
+sdata = sd.SpatialData.read(path_write)
+print(sdata)
+print('read')
