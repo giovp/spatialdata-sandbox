@@ -74,7 +74,7 @@ table.uns["mapping_info"] = {
 
 sdata = sd.SpatialData(
     table=table, images=images, points=points,
-    images_axes={lib: ("c", "y", "x") for lib in libraries},
+    images_axes={lib: ("y", "x", "c") for lib in libraries},
     transformations={(f"/images/{lib}", lib): images_transforms[lib] for lib in libraries} | {
         (f"/points/{lib}", lib): None for lib in libraries
     },
