@@ -143,11 +143,19 @@ sdata = sd.SpatialData(
     images={"image": x},
     points={"points": a_points, "circles": a_circles},
     transformations={
-        ("images/image", "global"): transformation,
-        ("points/points", "global"): sd.Identity(),
+        ("/images/image", "global"): transformation,
+        ("/points/points", "global"): None,
+        ("/points/circles", "global"): None,
     },
+    images_axes={"image": ("y", "x")},
     coordinate_systems=[
-        sd.CoordinateSystem(name="global", axes=["x", "y"], units=["um", "um"])
+        {
+            "name": "global",
+            "axes": [
+                {"name": "x", "type": "space", "unit": "micrometer"},
+                {"name": "y", "type": "space", "unit": "micrometer"},
+            ],
+        }
     ],
 )
 
@@ -158,6 +166,9 @@ if path_write.exists():
 sdata.write(path_write)
 print("done")
 
+sdata = sd.SpatialData.read(path_write)
+print(sdata)
+print('read')
 # viewer = load_to_napari_viewer(
 #     file_path=output_fpath,
 #     groups=["circles/circles_table", "points/points_table"],

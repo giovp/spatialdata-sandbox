@@ -56,7 +56,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     table.uns.pop("spatial")
     table.var_names_make_unique()
 
-    table.obs["library_id"] = lib
+    table.obs["library_id"] = f"/points/{lib}"
     table.obs["visium_spot_id"] = np.arange(len(table))
 
     table_list.append(table)
@@ -67,17 +67,20 @@ table = ad.concat(
     keys=libraries,
 )
 table.uns["mapping_info"] = {
-    "regions": libraries,
+    "regions": [f"/points/{lib}" for lib in libraries],
     "regions_key": "library_id",
     "instance_key": "visium_spot_id",
 }
 
 sdata = sd.SpatialData(
-    table=table, images=images, points=points,
+    table=table,
+    images=images,
+    points=points,
     images_axes={lib: ("y", "x", "c") for lib in libraries},
-    transformations={(f"/images/{lib}", lib): images_transforms[lib] for lib in libraries} | {
-        (f"/points/{lib}", lib): None for lib in libraries
-    },
+    transformations={
+        (f"/images/{lib}", lib): images_transforms[lib] for lib in libraries
+    }
+    | {(f"/points/{lib}", lib): None for lib in libraries},
     coordinate_systems=[
         {
             "name": lib,
@@ -85,10 +88,10 @@ sdata = sd.SpatialData(
                 {"name": "c", "type": "channel"},
                 {"name": "x", "type": "space", "unit": "micrometer"},
                 {"name": "y", "type": "space", "unit": "micrometer"},
-            ]
+            ],
         }
         for lib in libraries
-    ]
+    ],
 )
 print(sdata)
 
@@ -100,4 +103,4 @@ print("done")
 print(f'view with "python -m spatialdata view data.zarr"')
 sdata = sd.SpatialData.read(path_write)
 print(sdata)
-print('read')
+print("read")

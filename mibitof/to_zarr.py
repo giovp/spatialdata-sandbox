@@ -26,7 +26,7 @@ libraries = ["point8", "point16", "point23"]
 table_list = []
 for lib in libraries:
     table = ad.read(path_read / f"{lib}_table.h5ad")
-    table.obs["library_id"] = lib
+    table.obs["library_id"] = f'/labels/{lib}'
     table.obs["cell_id"] = np.arange(len(table))
     table_list.append(table)
 
@@ -35,7 +35,7 @@ table = ad.concat(
     keys=libraries,
 )
 table.uns["mapping_info"] = {
-    "regions": libraries,
+    "regions": [f'/labels/{lib}' for lib in libraries],
     "regions_key": "library_id",
     "instance_key": "cell_id",
 }

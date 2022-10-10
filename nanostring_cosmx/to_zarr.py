@@ -8,13 +8,9 @@ import numpy as np
 import imageio
 from tqdm import tqdm
 import time
-import json
-from ome_zarr.io import parse_url
-import zarr
-from ome_zarr.io import parse_url
-from ome_zarr.writer import write_image, write_labels
-import zarr
-from anndata.experimental import write_elem
+import pyarrow as pa
+import pyarrow.parquet as pq
+import imageio.v3 as iio
 
 path = Path().resolve()
 # luca's workaround for pycharm
@@ -31,87 +27,92 @@ path_write_small = path / "data_small.zarr"
 table = ad.read(path_read / "nanostring_lung5_rep2.h5ad")
 categories = table.obs.fov.cat.categories.to_list()
 
-# read points
-# takes 20 seconds
-start = time.time()
-points_df = pd.read_parquet(path_read / "nanostring_lung5_rep2_single_genes.parquet")
-print(f'read_parquet(): {time.time() - start}')
+##
+pp = pq.read_table(path_read / "nanostring_lung5_rep2_single_genes.parquet")
+print(f"read {len(pp)} points")
 
 ##
-points_df.reset_index(inplace=True, drop=False)
-# takes 50 seconds
-start = time.time()
-points_df["fov"] = pd.Categorical(points_df["fov"].astype(str))
-print(f'created categorical col: {time.time() - start}')
-points_df.reset_index(inplace=True, drop=False)
+# let's reduce the dataset size
+categories = categories[:3]
 
-##
-cols = ["y_local_px", "x_local_px"]
-# takes 10 seconds
-start = time.time()
-xy = points_df[["x_local_px", "y_local_px"]].to_numpy()
-print(f'xy: {time.time() - start}')
-
-##
-# takes 80 seconds
-start = time.time()
-points = ad.AnnData(
-    shape=(len(xy), 0),
-    obsm={"spatial": xy},
-    obs=points_df[points_df.columns.difference(cols)],
-    dtype=np.float_,
-)
-print(f'creating anndata: {time.time() - start}')
 ##
 list_of_images = []
 list_of_labels = []
 list_of_points = []
-for fov in tqdm(categories, desc="fovs"):
+for fov in tqdm(categories, desc="images, labels, points"):
     sfov = fov.zfill(3)
 
-    image = imageio.imread(path_read / "CellComposite" / f"CellComposite_F{sfov}.jpg")
-    labels = imageio.imread(path_read / "CellLabels" / f"CellLabels_F{sfov}.tif")
+    image = iio.imread(path_read / "CellComposite" / f"CellComposite_F{sfov}.jpg")
+    labels = iio.imread(path_read / "CellLabels" / f"CellLabels_F{sfov}.tif")
 
     list_of_images.append(np.flipud(image))
-    list_of_labels.append(labels)
-    # write_image(
-    #     image=image,
-    #     group=image_group,
-    #     axes=["c", "y", "x"],
-    #     scaler=None,
-    # )
-    # print(f"Written image `{fov}` .")
-    #
-    # write_labels(
-    #     labels=labels,
-    #     group=image_group,
-    #     name=fov,
-    #     axes=["y", "x"],
-    #     scaler=None,
-    # )
-    # print(f"Written labels `{fov}` .")
+    list_of_labels.append(np.flipud(labels))
 
-    points_subset = points[points.obs.fov == fov].copy()
-    # write_table_points(
-    #     group=image_group,
-    #     adata=points[points.obs.fov == fov].copy(),
-    # )
-    # print(f"Written points `{fov}` .")
-    list_of_points.append(points_subset)
+    # subsetting points
+    df = pp.filter(pa.compute.equal(pp.column("fov"), int(fov))).to_pandas()
+    xy = df[["x_local_px", "y_local_px"]].to_numpy()
+    points = ad.AnnData(shape=(len(df), 0), obsm={"spatial": xy})
+    list_of_points.append(points)
+
+##
+list_of_circles = []
+list_of_circles_transforms = []
+for fov in tqdm(categories, desc="circles"):
+    cells = table[table.obs.fov == fov]
+    xy = cells.obsm['spatial']
+    radii = np.sqrt(cells.obs["Area"].to_numpy() / np.pi)
+    circles = ad.AnnData(
+        shape=(len(cells), 0), obsm={"spatial": xy, "region_radius": radii}
+    )
+    circles.obs['cell_ID'] = cells.obs['cell_ID'].to_numpy()
+    list_of_circles.append(circles)
+
+table.obs['fov_path'] = table.obs['fov'].apply(lambda x: f'/points/cells{x}')
+table.uns['mapping_info'] = {
+    "regions": [f'/points/cells{fov}' for fov in categories],
+    "regions_key": "fov_path",
+    "instance_key": "cell_ID",
+}
 ##
 sdata = sd.SpatialData(
-    labels={
-        fov: labels for fov, labels in zip(categories, list_of_labels)
-    },
-    images={
-        fov: image for fov, image in zip(categories, list_of_images)
-    },
+    labels={fov: labels for fov, labels in zip(categories, list_of_labels)},
+    images={fov: image for fov, image in zip(categories, list_of_images)},
+    images_axes={fov: ("y", "x", "c") for fov in categories},
+    labels_axes={fov: ("y", "x") for fov in categories},
     points={
-        fov: points_subset
+        f"points{fov}": points_subset
         for fov, points_subset in zip(categories, list_of_points)
-    },
+    }
+    | {f"cells{fov}": circles for fov, circles in zip(categories, list_of_circles)},
+    transformations={(f"/images/{fov}", fov): None for fov in categories}
+    | {(f"/labels/{fov}", fov): None for fov in categories}
+    | {(f"/points/points{fov}", fov): None for fov in categories}
+    | {(f"/points/cells{fov}", fov): None for fov in categories},
+    coordinate_systems=[
+        {
+            "name": "global",
+            "axes": [
+                {"name": "c", "type": "channel"},
+                {"name": "x", "type": "space", "unit": "micrometer"},
+                {"name": "y", "type": "space", "unit": "micrometer"},
+            ],
+        }
+    ]
+    + [
+        {
+            "name": fov,
+            "axes": [
+                {"name": "c", "type": "channel"},
+                {"name": "x", "type": "space", "unit": "micrometer"},
+                {"name": "y", "type": "space", "unit": "micrometer"},
+            ],
+        }
+        for fov in categories
+    ],
+    table=table,
 )
 print(sdata)
+
 ##
 if path_write.exists():
     shutil.rmtree(path_write)
@@ -119,31 +120,11 @@ if path_write.exists():
 # takes 45 seconds, 3.9 GB written to disk (raw data is 5.1 GB)
 start = time.time()
 sdata.write(path_write)
-print(f'saving .zarr file: {time.time() - start}')
-
+print(f"saving .zarr file: {time.time() - start}")
 print(f'view with "python -m spatialdata view data.zarr"')
 
 ##
-my_labels={
-    fov: labels for fov, labels in zip(categories, list_of_labels) if fov in ['1', '2']
-}
-my_images={
-    fov: image for fov, image in zip(categories, list_of_images) if fov in ['1', '2']
-}
-my_points={
-    fov: points_subset
-    for fov, points_subset in zip(categories, list_of_points) if fov in ['1', '2']
-}
-sdata = sd.SpatialData(labels=my_labels, images=my_images, points=my_points)
+sdata = sd.SpatialData.read(path_write, filter_table=True)
+print(sdata)
+print("read")
 
-if path_write_small.exists():
-    shutil.rmtree(path_write_small)
-
-# takes 1 second, 0.1 GB written to disk
-start = time.time()
-sdata.write(path_write_small)
-print(f'saving .zarr file: {time.time() - start}')
-
-print(f'view with "python -m spatialdata view data_small.zarr"')
-
-print("done")

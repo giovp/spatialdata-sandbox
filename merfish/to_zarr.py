@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 import spatialdata as sd
 from spatialdata._core import Polygons
+import imageio.v3 as iio
 
 ##
 path = Path().resolve()
@@ -21,25 +22,25 @@ path_write = path / "data.zarr"
 
 ##
 cells = sc.read_h5ad(path_read / "cells.h5ad")
-img = np.asarray(imageio.imread(path_read / "image.png"))
+img = np.asarray(iio.imread(path_read / "image.png"))
 adata = sc.read_h5ad(path_read / "single_molecule.h5ad")
 single_molecule = ad.AnnData(shape=(len(adata), 0))
 single_molecule.obsm["spatial"] = adata.X
 single_molecule.obsm["spatial_type"] = adata.obsm["cell_type"]
 
 j = json.load(open(path_read / "image_transform.json", "r"))
-image_translation = np.array([j["translation_x"], j["translation_y"]])
-image_scale_factors = np.array([j["scale_factor_x"], j["scale_factor_y"]])
+image_translation = np.array([j["translation_y"], j["translation_x"]])
+image_scale_factors = np.array([j["scale_factor_y"], j["scale_factor_x"]])
 
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
 expression.uns["mapping_info"] = {
-    "regions": "cells",
+    "regions": "/points/cells",
     "regions_key": "regions_id",
     "instance_key": "cell_id",
 }
-expression.obs["regions_id"] = "cells"
+expression.obs["regions_id"] = "/points/cells"
 expression.obs["cell_id"] = np.arange(len(expression))
 
 regions = ad.AnnData(shape=(len(cells.obsm["spatial"]), 0))
@@ -50,14 +51,6 @@ regions.obs["cell_id"] = np.arange(len(regions))
 ##
 adata_polygons = Polygons.anndata_from_geojson(path_read / "anatomical.geojson")
 
-# brain_layers = {}
-# for layer in layers["geometries"]:
-#     assert layer["type"] == "Polygon"
-#     name = layer["name"]
-#     coordinates = np.array(layer["coordinates"])
-#     coordinates = np.squeeze(coordinates, 0)
-#     brain_layers[name] = coordinates
-
 ##
 translation = sd.Translation(translation=image_translation)
 scale = sd.Scale(scale=image_scale_factors)
@@ -65,13 +58,6 @@ scale = sd.Scale(scale=image_scale_factors)
 # composed = sd.compose_transformations(scale, translation)
 composed = sd.compose_transformations(scale, translation).to_affine()
 
-# sdata = sd.SpatialData(
-#     table=expression,
-#     points={"cells": regions, "single_molecule": single_molecule},
-#     images={"rasterized": img},
-#     images_transforms={"rasterized": composed},
-#     polygons={"anatomical": adata_polygons},
-# )
 ##
 sdata = sd.SpatialData(
     table=expression,
@@ -81,9 +67,9 @@ sdata = sd.SpatialData(
     images_axes={"rasterized": ("y", "x")},
     transformations={
         ("/images/rasterized", "global"): composed,
-        ("/points/cells", "global"): sd.Identity(),
-        ("/points/single_molecule", "global"): sd.Identity(),
-        ("/polygons/anatomical", "global"): sd.Identity(),
+        ("/points/cells", "global"): None,
+        ("/points/single_molecule", "global"): None,
+        ("/polygons/anatomical", "global"): None,
     },
     coordinate_systems=[
         {
