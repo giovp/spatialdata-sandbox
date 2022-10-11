@@ -9,6 +9,7 @@ from ngff_tables_prototype.reader import load_to_napari_viewer
 import numpy as np
 from pathlib import Path
 import spatialdata as sd
+import xarray as xr
 
 ##
 path = Path().resolve()
@@ -140,23 +141,11 @@ transformation = sd.compose_transformations(
     sd.Translation(translation=np.array([translation_x, translation_y])),
 )
 sdata = sd.SpatialData(
-    images={"image": x},
+    images={"image": xr.DataArray(x, dims=("y", "x"))},
     points={"points": a_points, "circles": a_circles},
     transformations={
         ("/images/image", "global"): transformation,
-        ("/points/points", "global"): None,
-        ("/points/circles", "global"): None,
     },
-    images_axes={"image": ("y", "x")},
-    coordinate_systems=[
-        {
-            "name": "global",
-            "axes": [
-                {"name": "x", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-            ],
-        }
-    ],
 )
 
 print(sdata)

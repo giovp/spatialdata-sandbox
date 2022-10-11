@@ -9,6 +9,7 @@ from pathlib import Path
 import spatialdata as sd
 from spatialdata._core import Polygons
 import imageio.v3 as iio
+import xarray as xr
 
 ##
 path = Path().resolve()
@@ -22,7 +23,7 @@ path_write = path / "data.zarr"
 
 ##
 cells = sc.read_h5ad(path_read / "cells.h5ad")
-img = np.asarray(iio.imread(path_read / "image.png"))
+img = xr.DataArray(iio.imread(path_read / "image.png"), dims=('y', 'x'))
 adata = sc.read_h5ad(path_read / "single_molecule.h5ad")
 single_molecule = ad.AnnData(shape=(len(adata), 0))
 single_molecule.obsm["spatial"] = adata.X
@@ -64,22 +65,9 @@ sdata = sd.SpatialData(
     points={"cells": regions, "single_molecule": single_molecule},
     images={"rasterized": img},
     polygons={"anatomical": adata_polygons},
-    images_axes={"rasterized": ("y", "x")},
     transformations={
         ("/images/rasterized", "global"): composed,
-        ("/points/cells", "global"): None,
-        ("/points/single_molecule", "global"): None,
-        ("/polygons/anatomical", "global"): None,
     },
-    coordinate_systems=[
-        {
-            "name": "global",
-            "axes": [
-                {"name": "x", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-            ],
-        }
-    ],
 )
 print(sdata)
 ##

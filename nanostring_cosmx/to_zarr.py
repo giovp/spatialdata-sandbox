@@ -11,6 +11,7 @@ import time
 import pyarrow as pa
 import pyarrow.parquet as pq
 import imageio.v3 as iio
+import xarray as xr
 
 path = Path().resolve()
 # luca's workaround for pycharm
@@ -45,8 +46,8 @@ for fov in tqdm(categories, desc="images, labels, points"):
     image = iio.imread(path_read / "CellComposite" / f"CellComposite_F{sfov}.jpg")
     labels = iio.imread(path_read / "CellLabels" / f"CellLabels_F{sfov}.tif")
 
-    list_of_images.append(np.flipud(image))
-    list_of_labels.append(np.flipud(labels))
+    list_of_images.append(xr.DataArray(np.flipud(image), dims=("y", "x", "c")))
+    list_of_labels.append(xr.DataArray(np.flipud(labels), dims=("y", "x")))
 
     # subsetting points
     df = pp.filter(pa.compute.equal(pp.column("fov"), int(fov))).to_pandas()
@@ -77,8 +78,6 @@ table.uns['mapping_info'] = {
 sdata = sd.SpatialData(
     labels={fov: labels for fov, labels in zip(categories, list_of_labels)},
     images={fov: image for fov, image in zip(categories, list_of_images)},
-    images_axes={fov: ("y", "x", "c") for fov in categories},
-    labels_axes={fov: ("y", "x") for fov in categories},
     points={
         f"points{fov}": points_subset
         for fov, points_subset in zip(categories, list_of_points)
@@ -88,27 +87,6 @@ sdata = sd.SpatialData(
     | {(f"/labels/{fov}", fov): None for fov in categories}
     | {(f"/points/points{fov}", fov): None for fov in categories}
     | {(f"/points/cells{fov}", fov): None for fov in categories},
-    coordinate_systems=[
-        {
-            "name": "global",
-            "axes": [
-                {"name": "c", "type": "channel"},
-                {"name": "x", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-            ],
-        }
-    ]
-    + [
-        {
-            "name": fov,
-            "axes": [
-                {"name": "c", "type": "channel"},
-                {"name": "x", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-            ],
-        }
-        for fov in categories
-    ],
     table=table,
 )
 print(sdata)

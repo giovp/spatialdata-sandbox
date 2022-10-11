@@ -10,6 +10,7 @@ import spatialdata as sd
 import re
 import os
 from tqdm import tqdm
+import xarray as xr
 
 ##
 
@@ -34,7 +35,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     assert len(lib_keys) == 1
     lib_key = lib_keys[0]
     img = table.uns["spatial"][lib_key]["images"]["hires"]
-    images[lib] = img
+    images[lib] = xr.DataArray(img, dims=('y', 'x', 'c'))
 
     radius = table.uns["spatial"][lib_key]["scalefactors"]["spot_diameter_fullres"] / 2
     shape_region = ad.AnnData(
@@ -76,22 +77,10 @@ sdata = sd.SpatialData(
     table=table,
     images=images,
     points=points,
-    images_axes={lib: ("y", "x", "c") for lib in libraries},
     transformations={
         (f"/images/{lib}", lib): images_transforms[lib] for lib in libraries
     }
     | {(f"/points/{lib}", lib): None for lib in libraries},
-    coordinate_systems=[
-        {
-            "name": lib,
-            "axes": [
-                {"name": "c", "type": "channel"},
-                {"name": "x", "type": "space", "unit": "micrometer"},
-                {"name": "y", "type": "space", "unit": "micrometer"},
-            ],
-        }
-        for lib in libraries
-    ],
 )
 print(sdata)
 
