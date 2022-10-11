@@ -1,16 +1,15 @@
 import matplotlib.pyplot as plt
-import napari
 import anndata as ad
-import json
-import os
 import shutil
-from ngff_tables_prototype.writer import write_spatial_anndata
-from ngff_tables_prototype.reader import load_to_napari_viewer
 import numpy as np
 from pathlib import Path
 import spatialdata as sd
 import xarray as xr
-
+from spatialdata_io import (
+    points_anndata_from_coordinates,
+    circles_anndata_from_coordinates,
+    table_update_anndata,
+)
 ##
 path = Path().resolve()
 # luca's workaround for pycharm
@@ -126,14 +125,8 @@ xy = get_points(begin_end)
 ax.scatter(xy[:, 0], xy[:, 1], s=1)
 plt.show()
 ##
-ss = list(map(str, range(len(points))))
-a_circles = ad.AnnData(obs=ss)
-a_circles.obs.index = ss
-a_circles.obs.columns = ["a"]
-a_circles.obsm["spatial"] = points
-a_circles.obsm["region_radius"] = np.sqrt(np.array(sizes) / np.pi)
-##
-a_points = ad.AnnData(shape=(len(xy), 0), obsm={"spatial": xy})
+a_circles = circles_anndata_from_coordinates(coordinates=points, radii=np.sqrt(np.array(sizes) / np.pi))
+a_points = points_anndata_from_coordinates(coordinates=xy)
 
 ##
 transformation = sd.compose_transformations(

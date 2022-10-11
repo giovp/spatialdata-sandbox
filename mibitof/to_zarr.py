@@ -1,17 +1,13 @@
 ##
-import shutil
-
-import json
 import numpy as np
-import scanpy as sc
-import os
-import imageio
 import shutil
 from pathlib import Path
 import spatialdata as sd
 import anndata as ad
 import xarray as xr
 import imageio.v3 as iio
+
+from spatialdata_io import table_update_anndata
 
 ##
 path = Path().resolve()
@@ -29,18 +25,19 @@ table_list = []
 for lib in libraries:
     table = ad.read(path_read / f"{lib}_table.h5ad")
     table.obs["library_id"] = f"/labels/{lib}"
-    table.obs["cell_id"] = np.arange(len(table))
     table_list.append(table)
 
 table = ad.concat(
     table_list,
     keys=libraries,
 )
-table.uns["mapping_info"] = {
-    "regions": [f"/labels/{lib}" for lib in libraries],
-    "regions_key": "library_id",
-    "instance_key": "cell_id",
-}
+table_update_anndata(
+    adata=table,
+    regions=[f"/labels/{lib}" for lib in libraries],
+    regions_key="library_id",
+    instance_key="cell_id",
+)
+
 ##
 labels = {
     lib: xr.DataArray(iio.imread(path_read / f"{lib}_labels.png"), dims=("y", "x"))
@@ -48,7 +45,8 @@ labels = {
 }
 images = {
     lib: xr.DataArray(
-        np.moveaxis(iio.imread(path_read / f"{lib}_image.png"), 2, 0), dims=("c", "y", "x")
+        np.moveaxis(iio.imread(path_read / f"{lib}_image.png"), 2, 0),
+        dims=("c", "y", "x"),
     )
     for lib in libraries
 }

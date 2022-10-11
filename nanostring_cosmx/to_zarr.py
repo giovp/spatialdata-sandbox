@@ -3,15 +3,18 @@ import spatialdata as sd
 import shutil
 import anndata as ad
 from pathlib import Path
-import pandas as pd
 import numpy as np
-import imageio
 from tqdm import tqdm
 import time
 import pyarrow as pa
 import pyarrow.parquet as pq
 import imageio.v3 as iio
 import xarray as xr
+from spatialdata_io import (
+    points_anndata_from_coordinates,
+    circles_anndata_from_coordinates,
+    table_update_anndata,
+)
 
 path = Path().resolve()
 # luca's workaround for pycharm
@@ -52,7 +55,7 @@ for fov in tqdm(categories, desc="images, labels, points"):
     # subsetting points
     df = pp.filter(pa.compute.equal(pp.column("fov"), int(fov))).to_pandas()
     xy = df[["x_local_px", "y_local_px"]].to_numpy()
-    points = ad.AnnData(shape=(len(df), 0), obsm={"spatial": xy})
+    points = points_anndata_from_coordinates(coordinates=xy)
     list_of_points.append(points)
 
 ##
@@ -60,20 +63,23 @@ list_of_circles = []
 list_of_circles_transforms = []
 for fov in tqdm(categories, desc="circles"):
     cells = table[table.obs.fov == fov]
-    xy = cells.obsm['spatial']
+    xy = cells.obsm["spatial"]
     radii = np.sqrt(cells.obs["Area"].to_numpy() / np.pi)
-    circles = ad.AnnData(
-        shape=(len(cells), 0), obsm={"spatial": xy, "region_radius": radii}
+    circles = circles_anndata_from_coordinates(
+        coordinates=xy,
+        radii=radii,
+        instance_key="cell_ID",
+        instance_values=cells.obs["cell_ID"].to_numpy(),
     )
-    circles.obs['cell_ID'] = cells.obs['cell_ID'].to_numpy()
     list_of_circles.append(circles)
 
-table.obs['fov_path'] = table.obs['fov'].apply(lambda x: f'/points/cells{x}')
-table.uns['mapping_info'] = {
-    "regions": [f'/points/cells{fov}' for fov in categories],
-    "regions_key": "fov_path",
-    "instance_key": "cell_ID",
-}
+table.obs["fov_path"] = table.obs["fov"].apply(lambda x: f"/points/cells{x}")
+table_update_anndata(
+    table,
+    regions=[f"/points/cells{fov}" for fov in categories],
+    regions_key="fov_path",
+    instance_key="cell_ID",
+)
 ##
 sdata = sd.SpatialData(
     labels={fov: labels for fov, labels in zip(categories, list_of_labels)},
@@ -105,4 +111,3 @@ print(f'view with "python -m spatialdata view data.zarr"')
 sdata = sd.SpatialData.read(path_write, filter_table=True)
 print(sdata)
 print("read")
-
