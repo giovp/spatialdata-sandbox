@@ -134,7 +134,7 @@ transformation = sd.compose_transformations(
     sd.Translation(translation=np.array([translation_x, translation_y])),
 )
 sdata = sd.SpatialData(
-    images={"image": xr.DataArray(x, dims=("y", "x"))},
+    images={"image": xr.DataArray(x, dims=("y", "x")).astype(np.uint8)},
     points={"points": a_points, "circles": a_circles},
     transformations={
         ("/images/image", "global"): transformation,

@@ -42,7 +42,9 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     assert len(lib_keys) == 1
     lib_key = lib_keys[0]
     img = table.uns["spatial"][lib_key]["images"]["hires"]
-    images[lib] = xr.DataArray(img, dims=("y", "x", "c"))
+    assert img.dtype == np.float32 and np.min(img) >= 0. and np.max(img) <= 1.
+    scaled = (xr.DataArray(img, dims=("y", "x", "c")) * 255).astype(np.uint8)
+    images[lib] = scaled
 
     # prepare circles
     radius = table.uns["spatial"][lib_key]["scalefactors"]["spot_diameter_fullres"] / 2
@@ -68,6 +70,7 @@ table = ad.concat(
     keys=libraries,
 )
 
+del table.obsm['spatial']
 table_update_anndata(
     adata=table,
     regions=[f"/points/{lib}" for lib in libraries],
