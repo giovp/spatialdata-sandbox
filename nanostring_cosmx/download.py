@@ -1,7 +1,9 @@
+##
 import os
 import numpy as np
 import pandas as pd
 import scanpy as sc
+import time
 
 from anndata import AnnData
 from pathlib import Path
@@ -84,6 +86,15 @@ sc.write(path / "nanostring_lung5_rep2.h5ad", adata)
 df_single_genes = pd.read_csv(
     path / "Lung5_Rep2_tx_file.csv", header=0, index_col=fov_key
 )
+##
+df_single_genes.reset_index(inplace=True, drop=False)
+# takes 15 seconds
+start = time.time()
+df_single_genes["fov"] = pd.Categorical(df_single_genes["fov"].astype(str))
+print(f'created categorical col: {time.time() - start}')
+df_single_genes.reset_index(inplace=True, drop=False)
+
+##
 pd.DataFrame.to_parquet(
     df_single_genes, path / "nanostring_lung5_rep2_single_genes.parquet"
 )
