@@ -2,7 +2,7 @@
 `pip install anndata datashader imageio`
 
 ### Data
-MERFISH M. Musculus (VISp) from the Zhuang lab, downloaded from [spacetx-spacejam] (https://github.com/spacetx-spacejam/data).
+MERFISH M. Musculus (VISp), Allen Institute prototype MERFISH pipeline. Downloaded from [spacetx-spacejam] (https://github.com/spacetx-spacejam/data).
 
 Raw data saved in `raw/`
 

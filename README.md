@@ -12,3 +12,5 @@ Example datasets for SpatialData development.
   * Images
   * Regions
 * Have a readme.md with prose
+
+<img src='https://github.com/giovp/spatialdata-sandbox/raw/main/graphics/overview.png'/>
