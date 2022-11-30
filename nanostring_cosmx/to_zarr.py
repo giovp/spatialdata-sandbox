@@ -9,12 +9,6 @@ import time
 import pyarrow as pa
 import pyarrow.parquet as pq
 import imageio.v3 as iio
-import xarray as xr
-from spatialdata_io import (
-    points_anndata_from_coordinates,
-    circles_anndata_from_coordinates,
-    table_update_anndata,
-)
 
 path = Path().resolve()
 # luca's workaround for pycharm
@@ -49,13 +43,13 @@ for fov in tqdm(categories, desc="images, labels, points"):
     image = iio.imread(path_read / "CellComposite" / f"CellComposite_F{sfov}.jpg")
     labels = iio.imread(path_read / "CellLabels" / f"CellLabels_F{sfov}.tif")
 
-    list_of_images.append(xr.DataArray(np.flipud(image), dims=("y", "x", "c")))
-    list_of_labels.append(xr.DataArray(np.flipud(labels), dims=("y", "x")))
+    list_of_images.append(sd.Image2DModel.parse(np.flipud(image), dims=("y", "x", "c")))
+    list_of_labels.append(sd.Labels2DModel.parse(np.flipud(labels), dims=("y", "x")))
 
     # subsetting points
     df = pp.filter(pa.compute.equal(pp.column("fov"), int(fov))).to_pandas()
     xy = df[["x_local_px", "y_local_px"]].to_numpy()
-    points = points_anndata_from_coordinates(coordinates=xy)
+    points = sd.PointsModel.parse(coords=xy)
     list_of_points.append(points)
 
 ##
@@ -65,19 +59,21 @@ for fov in tqdm(categories, desc="circles"):
     cells = table[table.obs.fov == fov]
     xy = cells.obsm["spatial"]
     radii = np.sqrt(cells.obs["Area"].to_numpy() / np.pi)
-    circles = circles_anndata_from_coordinates(
-        coordinates=xy,
-        radii=radii,
+    circles = sd.ShapesModel.parse(
+        coords=xy,
+        shape_type="Circle",
+        shape_size=np.mean(radii).item(),
         instance_key="cell_ID",
         instance_values=cells.obs["cell_ID"].to_numpy(),
     )
     list_of_circles.append(circles)
 
-table.obs["fov_path"] = table.obs["fov"].apply(lambda x: f"/points/cells{x}")
-table_update_anndata(
+table = table[table.obs.fov.isin(categories)]
+table.obs["fov_path"] = table.obs["fov"].apply(lambda x: f"/shapes/cells{x}")
+table = sd.TableModel.parse(
     table,
-    regions=[f"/points/cells{fov}" for fov in categories],
-    regions_key="fov_path",
+    region=[f"/shapes/cells{fov}" for fov in categories],
+    region_key="fov_path",
     instance_key="cell_ID",
 )
 ##
@@ -87,12 +83,12 @@ sdata = sd.SpatialData(
     points={
         f"points{fov}": points_subset
         for fov, points_subset in zip(categories, list_of_points)
-    }
-    | {f"cells{fov}": circles for fov, circles in zip(categories, list_of_circles)},
-    transformations={(f"/images/{fov}", fov): None for fov in categories}
-    | {(f"/labels/{fov}", fov): None for fov in categories}
-    | {(f"/points/points{fov}", fov): None for fov in categories}
-    | {(f"/points/cells{fov}", fov): None for fov in categories},
+    },
+    shapes={f"cells{fov}": circles for fov, circles in zip(categories, list_of_circles)},
+    # transformations={(f"/images/{fov}", fov): None for fov in categories}
+    # | {(f"/labels/{fov}", fov): None for fov in categories}
+    # | {(f"/points/points{fov}", fov): None for fov in categories}
+    # | {(f"/points/cells{fov}", fov): None for fov in categories},
     table=table,
 )
 print(sdata)
@@ -108,6 +104,7 @@ print(f"saving .zarr file: {time.time() - start}")
 print(f'view with "python -m spatialdata view data.zarr"')
 
 ##
-sdata = sd.SpatialData.read(path_write, filter_table=True)
+# sdata = sd.SpatialData.read(path_write, filter_table=True)
+sdata = sd.SpatialData.read(path_write)
 print(sdata)
 print("read")

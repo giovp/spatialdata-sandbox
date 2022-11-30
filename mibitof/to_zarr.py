@@ -1,13 +1,9 @@
 ##
-import numpy as np
 import shutil
 from pathlib import Path
 import spatialdata as sd
 import anndata as ad
-import xarray as xr
 import imageio.v3 as iio
-
-from spatialdata_io import table_update_anndata
 
 ##
 path = Path().resolve()
@@ -31,30 +27,25 @@ table = ad.concat(
     table_list,
     keys=libraries,
 )
-table_update_anndata(
+table = sd.TableModel.parse(
     adata=table,
-    regions=[f"/labels/{lib}" for lib in libraries],
-    regions_key="library_id",
+    region=[f"/labels/{lib}" for lib in libraries],
+    region_key="library_id",
     instance_key="cell_id",
 )
 
 ##
 labels = {
-    lib: xr.DataArray(iio.imread(path_read / f"{lib}_labels.png"), dims=("y", "x"))
+    lib: sd.Labels2DModel.parse(iio.imread(path_read / f"{lib}_labels.png"), dims=("y", "x"))
     for lib in libraries
 }
 images = {
-    lib: xr.DataArray(
-        np.moveaxis(iio.imread(path_read / f"{lib}_image.png"), 2, 0),
-        dims=("c", "y", "x"),
+    lib: sd.Image2DModel.parse(
+        iio.imread(path_read / f"{lib}_image.png"),
+        dims=("y", "x", "c"),
     )
     for lib in libraries
 }
-#   x y
-# c 0 0 0
-# y 0 1 0
-# x 1 0 0
-#   0 0 1
 
 ##
 
@@ -62,8 +53,8 @@ sdata = sd.SpatialData(
     table=table,
     labels=labels,
     images=images,
-    transformations={(f"/images/{lib}", lib): None for lib in libraries}
-    | {(f"/labels/{lib}", lib): None for lib in libraries}
+    # transformations={(f"/images/{lib}", lib): None for lib in libraries}
+    # | {(f"/labels/{lib}", lib): None for lib in libraries}
 )
 print(sdata)
 
