@@ -50,6 +50,12 @@ images = {
     )
     for lib in libraries
 }
+#   x y
+# c 0 0 0
+# y 0 1 0
+# x 1 0 0
+#   0 0 1
+
 ##
 
 sdata = sd.SpatialData(
@@ -57,7 +63,7 @@ sdata = sd.SpatialData(
     labels=labels,
     images=images,
     transformations={(f"/images/{lib}", lib): None for lib in libraries}
-    | {(f"/labels/{lib}", lib): None for lib in libraries},
+    | {(f"/labels/{lib}", lib): None for lib in libraries}
 )
 print(sdata)
 
