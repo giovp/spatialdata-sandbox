@@ -63,8 +63,6 @@ for fov in tqdm(categories, desc="circles"):
         coords=xy,
         shape_type="Circle",
         shape_size=np.mean(radii).item(),
-        instance_key="cell_ID",
-        instance_values=cells.obs["cell_ID"].to_numpy(),
     )
     list_of_circles.append(circles)
 

@@ -1,4 +1,5 @@
 ##
+import geopandas._compat
 import json
 import numpy as np
 import scanpy as sc
@@ -6,6 +7,7 @@ import shutil
 from pathlib import Path
 import spatialdata as sd
 import imageio.v3 as iio
+import pandas as pd
 
 ##
 path = Path().resolve()
@@ -33,7 +35,8 @@ img = iio.imread(path_read / "image.png")
 img = np.expand_dims(img, axis=0)
 img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transform=composed)
 ##
-single_molecule = sd.PointsModel.parse(coords=adata.X, points_assignment=adata.obsm["cell_type"])
+annotations = pd.DataFrame({'cell_type': pd.Categorical(adata.obsm["cell_type"])})
+single_molecule = sd.PointsModel.parse(coords=adata.X, annotations=annotations)
 
 expression = cells.copy()
 del expression.obsm["region_radius"]
@@ -49,8 +52,6 @@ regions = sd.ShapesModel.parse(
     coords=xy,
     shape_type='Circle',
     shape_size=np.mean(cells.obsm["region_radius"]).item(),
-    instance_key="cell_id",
-    instance_values=np.arange(len(xy)),
 )
 
 with open(path_read / "anatomical.geojson") as infile:

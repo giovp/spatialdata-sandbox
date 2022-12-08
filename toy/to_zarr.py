@@ -143,7 +143,8 @@ a_points = sd.PointsModel.parse(coords=xy)
 ##
 sdata = sd.SpatialData(
     images={"image": image},
-    points={"points": a_points, "circles": a_circles},
+    points={"points": a_points},
+    shapes={"circles": a_circles},
 )
 
 print(sdata)

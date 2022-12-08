@@ -28,7 +28,7 @@ libraries = [re.sub(".h5ad", "", i) for i in os.listdir(path_read / "tables")][:
 ##
 table_list = []
 images = {}
-points = {}
+shapes = {}
 for lib in tqdm(libraries, desc="loading visium libraries"):
     # prepare table
     table = ad.read_h5ad(path_read / "tables" / f"{lib}.h5ad")
@@ -63,10 +63,8 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
         coords=table.obsm["spatial"],
         shape_type="Circle",
         shape_size=radius,
-        instance_key="visium_spot_id",
-        instance_values=np.arange(len(table)),
     )
-    points[lib] = shape_regions
+    shapes[lib] = shape_regions
 
 
 table = ad.concat(
@@ -86,7 +84,7 @@ adata = sd.TableModel.parse(
 sdata = sd.SpatialData(
     table=table,
     images=images,
-    points=points,
+    shapes=shapes,
 )
 print(sdata)
 
