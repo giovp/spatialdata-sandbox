@@ -1,4 +1,8 @@
 ##
+import pyarrow as pa
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
 import geopandas._compat
 import json
 import numpy as np
@@ -36,7 +40,7 @@ img = np.expand_dims(img, axis=0)
 img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transform=composed)
 ##
 annotations = pd.DataFrame({'cell_type': pd.Categorical(adata.obsm["cell_type"])})
-single_molecule = sd.PointsModel.parse(coords=adata.X, annotations=annotations)
+single_molecule = sd.PointsModel.parse(coords=adata.X, annotations=pa.Table.from_pandas(annotations))
 
 expression = cells.copy()
 del expression.obsm["region_radius"]
