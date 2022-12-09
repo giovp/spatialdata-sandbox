@@ -62,7 +62,7 @@ for fov in tqdm(categories, desc="circles"):
     circles = sd.ShapesModel.parse(
         coords=xy,
         shape_type="Circle",
-        shape_size=np.mean(radii).item(),
+        shape_size=radii,
     )
     list_of_circles.append(circles)
 

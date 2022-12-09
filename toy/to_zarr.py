@@ -42,12 +42,12 @@ translation_y = 50
 scale_factor = 3
 transformation = sd.Sequence(
     [
-        sd.Scale(scale=np.array([scale_factor, scale_factor])),
-        sd.Translation(translation=np.array([translation_x, translation_y])),
+        sd.Scale(scale=np.array([1., scale_factor, scale_factor])),
+        sd.Translation(translation=np.array([0., translation_y, translation_x])),
     ]
 )
 x = np.expand_dims(x, axis=0)
-image = sd.Image2DModel.parse(x.astype(np.uint8), dims=('c', "y", "x"), transform=transformation)
+image = sd.Image2DModel.parse(x, dims=('c', "y", "x"), transform=transformation)
 ##
 # circles
 if PLOT:
@@ -136,7 +136,7 @@ if PLOT:
 a_circles = sd.ShapesModel.parse(
     coords=points,
     shape_type="Circle",
-    shape_size=np.mean(np.sqrt(np.array(sizes) / np.pi)).item(),
+    shape_size=np.sqrt(np.array(sizes) / np.pi),
 )
 a_points = sd.PointsModel.parse(coords=xy)
 

@@ -28,8 +28,8 @@ cells = sc.read_h5ad(path_read / "cells.h5ad")
 adata = sc.read_h5ad(path_read / "single_molecule.h5ad")
 ##
 j = json.load(open(path_read / "image_transform.json", "r"))
-image_translation = np.array([j["translation_y"], j["translation_x"]])
-image_scale_factors = np.array([j["scale_factor_y"], j["scale_factor_x"]])
+image_translation = np.array([0., j["translation_y"], j["translation_x"]])
+image_scale_factors = np.array([1., j["scale_factor_y"], j["scale_factor_x"]])
 
 translation = sd.Translation(translation=image_translation)
 scale = sd.Scale(scale=image_scale_factors)
@@ -55,7 +55,7 @@ xy = cells.obsm["spatial"]
 regions = sd.ShapesModel.parse(
     coords=xy,
     shape_type='Circle',
-    shape_size=np.mean(cells.obsm["region_radius"]).item(),
+    shape_size=cells.obsm["region_radius"],
 )
 
 with open(path_read / "anatomical.geojson") as infile:
@@ -80,4 +80,8 @@ print(f'view with "python -m napari_spatialdata view data.zarr"')
 ##
 sdata = sd.SpatialData.read(path_write)
 print(sdata)
+
+for el in sdata._gen_elements():
+    t = sd.get_transform(el)
+    print(t.to_affine().affine)
 print("read")

@@ -1,4 +1,3 @@
-import os
 from spatialdata import SpatialData
 from napari_spatialdata import Interactive
 
