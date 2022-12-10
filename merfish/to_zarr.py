@@ -2,8 +2,6 @@
 import pyarrow as pa
 import os
 os.environ['USE_PYGEOS'] = '0'
-import geopandas
-import geopandas._compat
 import json
 import numpy as np
 import scanpy as sc
@@ -58,9 +56,7 @@ regions = sd.ShapesModel.parse(
     shape_size=cells.obsm["region_radius"],
 )
 
-with open(path_read / "anatomical.geojson") as infile:
-    geojson_string = infile.read()
-adata_polygons = sd.PolygonsModel.parse(geojson_string, instance_key="region_id")
+adata_polygons = sd.PolygonsModel.parse(path_read / "anatomical.geojson", instance_key="region_id")
 
 ##
 sdata = sd.SpatialData(

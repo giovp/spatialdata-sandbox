@@ -35,3 +35,7 @@ def test_visium2():
 def test_xenium():
     sdata = SpatialData.read("xenium/data.zarr")
     Interactive(sdata, headless=True)
+
+
+if __name__ == "__main__":
+    test_merfish()

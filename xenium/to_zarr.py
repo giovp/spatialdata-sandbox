@@ -23,6 +23,10 @@ def main():
     convert_xenium_to_ngff(
         str(path_read),
         str(path_write),
+        # skip_nucleus_boundaries=True,
+        # skip_cell_boundaries=True,
+        # skip_points=True,
+        skip_table_and_shapes=True,
         skip_image_morphology=True,
         skip_image_morphology_mip=True,
         skip_image_morphology_focus=True,
