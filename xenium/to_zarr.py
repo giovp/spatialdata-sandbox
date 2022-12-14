@@ -1,5 +1,5 @@
 ##
-from spatialdata_io import convert_xenium_to_ngff
+from spatialdata_io import convert_xenium_to_ngff, read_visium
 import spatialdata as sd
 
 ##
