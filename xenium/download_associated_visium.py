@@ -40,5 +40,5 @@ for file in os.listdir():
         shutil.move(file, file.replace('CytAssist_FFPE_Human_Breast_Cancer_', ''))
 shutil.move('spatial/tissue_positions.csv', 'spatial/tissue_positions_list.csv')
 ##
-from spatialdata_io import read_visium
-sdata = read_visium('.')
+# from spatialdata_io import read_visium
+# sdata = read_visium('.')
