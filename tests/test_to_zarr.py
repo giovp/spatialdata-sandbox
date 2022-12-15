@@ -1,7 +1,10 @@
 import os
 import pathlib
 
+import pytest
+
 path = pathlib.Path(__file__).parent.parent.resolve()
+
 
 def test_merfish():
     os.chdir(path / "merfish")
@@ -33,6 +36,7 @@ def test_visium2():
     import visium2.to_zarr
 
 
+@pytest.mark.skip(reason="large dataset")
 def test_xenium():
     os.chdir(path / "xenium")
     from xenium.to_zarr import main

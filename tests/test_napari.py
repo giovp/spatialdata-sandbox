@@ -1,3 +1,4 @@
+import pytest
 from spatialdata import SpatialData
 from napari_spatialdata import Interactive
 
@@ -32,6 +33,7 @@ def test_visium2():
     Interactive(sdata, headless=True)
 
 
+@pytest.mark.skip(reason="Skipping because skipping the corrsponding to_zarr()")
 def test_xenium():
     sdata = SpatialData.read("xenium/data.zarr")
     Interactive(sdata, headless=True)
