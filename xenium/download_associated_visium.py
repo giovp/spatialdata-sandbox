@@ -28,17 +28,17 @@ urls = [
 os.makedirs("data", exist_ok=True)
 os.makedirs("data/visium", exist_ok=True)
 for url in tqdm(urls, desc="downloading"):
-    command = f"curl -O {url} --output {'data/visium/' + Path(url).name}"
+    command = f"curl {url} --output 'data/visium/{Path(url).name}'"
     os.system(command)
 
 ##
-os.chdir('data/visium')
-os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_analysis.tar.gz')
-os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_spatial.tar.gz')
-for file in os.listdir():
-    if file.startswith('CytAssist_FFPE_Human_Breast_Cancer_'):
-        shutil.move(file, file.replace('CytAssist_FFPE_Human_Breast_Cancer_', ''))
-shutil.move('spatial/tissue_positions.csv', 'spatial/tissue_positions_list.csv')
+os.chdir("data/visium")
+os.system("tar -xvf CytAssist_FFPE_Human_Breast_Cancer_spatial.tar.gz")
+# os.system("tar -xvf CytAssist_FFPE_Human_Breast_Cancer_analysis.tar.gz")
+# for file in os.listdir():
+#     if file.startswith('CytAssist_FFPE_Human_Breast_Cancer_'):
+#         shutil.move(file, file.replace('CytAssist_FFPE_Human_Breast_Cancer_', ''))
+# shutil.move('spatial/tissue_positions.csv', 'spatial/tissue_positions_list.csv')
 ##
 # from spatialdata_io import read_visium
 # sdata = read_visium('.')
