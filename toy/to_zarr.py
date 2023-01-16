@@ -40,10 +40,10 @@ if PLOT:
 translation_x = 100
 translation_y = 50
 scale_factor = 3
-transformation = sd.Sequence(
+transformation = sd.NgffSequence(
     [
-        sd.Scale(scale=np.array([1., scale_factor, scale_factor])),
-        sd.Translation(translation=np.array([0., translation_y, translation_x])),
+        sd.NgffScale(scale=np.array([1., scale_factor, scale_factor])),
+        sd.NgffTranslation(translation=np.array([0., translation_y, translation_x])),
     ]
 )
 x = np.expand_dims(x, axis=0)

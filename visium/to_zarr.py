@@ -48,7 +48,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
         [1.0]
         + [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2
     )
-    transform = sd.Scale(scale=scale_factors)
+    transform = sd.NgffScale(scale=scale_factors)
 
     # prepare image
     img = table.uns["spatial"][lib_key]["images"]["hires"]

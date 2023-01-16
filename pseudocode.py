@@ -49,9 +49,9 @@ regions = circles_anndata_from_coordinates(
 adata_polygons = polygons_anndata_from_geojson("anatomical.geojson")
 
 # transformations
-translation = sd.Translation(translation=np.array([123., 10.]))
-scale = sd.Scale(scale=np.array([0.5, 0.5]))
-composed = sd.Sequence([scale, translation])
+translation = sd.NgffTranslation(translation=np.array([123., 10.]))
+scale = sd.NgffScale(scale=np.array([0.5, 0.5]))
+composed = sd.NgffSequence([scale, translation])
 
 # annotation table (cell expression matrix)
 expression = cells.copy()
@@ -89,9 +89,9 @@ img = xr.DataArray(iio.imread("image.png"), dims=("y", "x"))
 cs = sd.CoordinateSystem(name="global", axes=["x", "y", 'ChaNnEls'])
 
 image = xr.DataArray(...)
-translation = sd.Translation(translation=np.array([123., 10.]))
-scale = sd.Scale(scale=np.array([0.5, 0.5]))
-composed = sd.Sequence([scale, translation])
+translation = sd.NgffTranslation(translation=np.array([123., 10.]))
+scale = sd.NgffScale(scale=np.array([0.5, 0.5]))
+composed = sd.NgffSequence([scale, translation])
 composed.input = '/images/my_image'
 composed.output = cs
 

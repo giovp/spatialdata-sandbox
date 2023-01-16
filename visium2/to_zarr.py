@@ -1,5 +1,5 @@
 ##
-from spatialdata_io import read_visium
+from spatialdata_io import visium
 import spatialdata as sd
 ##
 from pathlib import Path
@@ -14,7 +14,7 @@ if not str(path).endswith("visium2"):
 path_read = path / "data"
 path_write = path / "data.zarr"
 ##
-sdata = read_visium(path_read)
+sdata = visium(path_read)
 ##
 if path_write.exists():
     shutil.rmtree(path_write)

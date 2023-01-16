@@ -29,9 +29,9 @@ j = json.load(open(path_read / "image_transform.json", "r"))
 image_translation = np.array([0., j["translation_y"], j["translation_x"]])
 image_scale_factors = np.array([1., j["scale_factor_y"], j["scale_factor_x"]])
 
-translation = sd.Translation(translation=image_translation)
-scale = sd.Scale(scale=image_scale_factors)
-composed = sd.Sequence([scale, translation])
+translation = sd.NgffTranslation(translation=image_translation)
+scale = sd.NgffScale(scale=image_scale_factors)
+composed = sd.NgffSequence([scale, translation])
 
 img = iio.imread(path_read / "image.png")
 img = np.expand_dims(img, axis=0)
