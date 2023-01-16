@@ -75,6 +75,20 @@ table = sd.TableModel.parse(
     instance_key="cell_ID",
 )
 ##
+# name the coordinate systems after the sample name
+# TODO: make a API for doing this kind of operations, maybe an argument in the parser to specify the coordinate system name
+def rename_coordinate_syestem(element: sd.SpatialElement, new_name: str):
+    t = sd.get_transform(element)
+    t.output_coordinate_system._name = new_name
+    new_element = sd.set_transform(element, t)
+    return new_element
+
+for fov in categories:
+    for list_of_elements in [list_of_images, list_of_labels, list_of_circles, list_of_points]:
+        element = list_of_elements[categories.index(fov)]
+        new_element = rename_coordinate_syestem(element, fov)
+        list_of_elements[categories.index(fov)] = new_element
+##
 sdata = sd.SpatialData(
     labels={fov: labels for fov, labels in zip(categories, list_of_labels)},
     images={fov: image for fov, image in zip(categories, list_of_images)},
