@@ -4,15 +4,10 @@ import anndata as ad
 import shutil
 from pathlib import Path
 import spatialdata as sd
+from spatialdata._core.transformations import Scale
 import re
 import os
 from tqdm import tqdm
-import xarray as xr
-
-# from spatialdata_io import (
-#     circles_anndata_from_coordinates,
-#     table_update_anndata,
-# )
 
 ##
 path = Path().resolve()
@@ -45,10 +40,9 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
 
     # prepare image transformation
     scale_factors = np.array(
-        [1.0]
-        + [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2
+        [1 / table.uns["spatial"][lib_key]["scalefactors"]["tissue_hires_scalef"]] * 2
     )
-    transform = sd.NgffScale(scale=scale_factors)
+    transform = Scale(scale=scale_factors, axes=('y', 'x'))
 
     # prepare image
     img = table.uns["spatial"][lib_key]["images"]["hires"]
