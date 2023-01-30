@@ -1,5 +1,5 @@
 ##
-from spatialdata_io import read_visium
+from spatialdata_io import visium
 import spatialdata as sd
 
 ##
@@ -16,7 +16,7 @@ def main():
     path_read = path / "data/visium/"
     path_write = path / "data_visium.zarr"
     ##
-    sdata_visium = read_visium(str(path_read))
+    sdata_visium = visium(str(path_read))
     sdata_visium.write(str(path_write))
     print("done")
     ##

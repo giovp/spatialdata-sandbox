@@ -7,39 +7,30 @@ from pathlib import Path
 import shutil
 
 ##
+path = Path().resolve()
+# luca's workaround for pycharm
+if not str(path).endswith("xenium"):
+    path /= "xenium"
+    assert path.exists()
+path_read = path / "data/xenium/outs"
+path_write = path / "data.zarr"
+##
+print('parsing the data... ', end='')
+sdata = xenium(
+    path=str(path_read),
+    n_jobs=8,
+)
+print("done")
+##
+print('writing the data... ', end='')
+if path_write.exists():
+    shutil.rmtree(path_write)
+sdata.write(path_write)
+print("done")
+##
+print(f'view with "python -m spatialdata view data.zarr"')
+sdata = sd.SpatialData.read("./data.zarr/")
+print("read")
+print(sdata)
+##
 
-# since we use multiprocessing we need if __name__ == "__main__", otherwise we get this error https://stackoverflow.com/questions/55057957/an-attempt-has-been-made-to-start-a-new-process-before-the-current-process-has-f
-# we also enclose the code in a function, so that we can call it from the tests
-def main():
-    ##
-    path = Path().resolve()
-    # luca's workaround for pycharm
-    if not str(path).endswith("xenium"):
-        path /= "xenium"
-        assert path.exists()
-    path_read = path / "data"
-    path_write = path / "data.zarr"
-    ##
-    xenium(
-        path=str(path_read),
-        n_jobs=8,
-        # str(path_write),
-        # skip_nucleus_boundaries=True,
-        # skip_cell_boundaries=True,
-        # skip_points=True,
-        # skip_table_and_shapes=True,
-        # skip_image_morphology=True,
-        # skip_image_morphology_mip=True,
-        # skip_image_morphology_focus=True,
-    )
-    print("done")
-    ##
-    print(f'view with "python -m spatialdata view data.zarr"')
-    print("read")
-    sdata = sd.SpatialData.read("./data.zarr/")
-    print(sdata)
-    ##
-
-
-if __name__ == "__main__":
-    main()
