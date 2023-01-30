@@ -1,5 +1,5 @@
 ##
-from spatialdata_io import convert_xenium_to_ngff, read_visium
+from spatialdata_io import xenium
 import spatialdata as sd
 
 ##
@@ -20,16 +20,17 @@ def main():
     path_read = path / "data"
     path_write = path / "data.zarr"
     ##
-    convert_xenium_to_ngff(
-        str(path_read),
-        str(path_write),
+    xenium(
+        path=str(path_read),
+        n_jobs=8,
+        # str(path_write),
         # skip_nucleus_boundaries=True,
         # skip_cell_boundaries=True,
         # skip_points=True,
-        skip_table_and_shapes=True,
-        skip_image_morphology=True,
-        skip_image_morphology_mip=True,
-        skip_image_morphology_focus=True,
+        # skip_table_and_shapes=True,
+        # skip_image_morphology=True,
+        # skip_image_morphology_mip=True,
+        # skip_image_morphology_focus=True,
     )
     print("done")
     ##

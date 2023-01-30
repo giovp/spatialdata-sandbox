@@ -3,6 +3,7 @@ import shutil
 import numpy as np
 from pathlib import Path
 import spatialdata as sd
+from spatialdata._core.transformations import Scale, Translation, Sequence
 
 PLOT = False
 
@@ -40,10 +41,10 @@ if PLOT:
 translation_x = 100
 translation_y = 50
 scale_factor = 3
-transformation = sd.NgffSequence(
+transformation = Sequence(
     [
-        sd.NgffScale(scale=np.array([1., scale_factor, scale_factor])),
-        sd.NgffTranslation(translation=np.array([0., translation_y, translation_x])),
+        Scale(scale=np.array([scale_factor, scale_factor]), axes=('y', 'x')),
+        Translation(translation=np.array([translation_y, translation_x]), axes=('y', 'x')),
     ]
 )
 x = np.expand_dims(x, axis=0)
@@ -138,12 +139,12 @@ a_circles = sd.ShapesModel.parse(
     shape_type="Circle",
     shape_size=np.sqrt(np.array(sizes) / np.pi),
 )
-a_points = sd.PointsModel.parse(coords=xy)
+# a_points = sd.PointsModel.parse(coords=xy)
 
 ##
 sdata = sd.SpatialData(
     images={"image": image},
-    points={"points": a_points},
+    # points={"points": a_points},
     shapes={"circles": a_circles},
 )
 

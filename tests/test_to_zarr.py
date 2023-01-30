@@ -16,6 +16,7 @@ def test_mibitof():
     import mibitof.to_zarr
 
 
+@pytest.mark.skip(reason="large dataset")
 def test_nanostring_cosmx():
     os.chdir(path / "nanostring_cosmx")
     import nanostring_cosmx.to_zarr
