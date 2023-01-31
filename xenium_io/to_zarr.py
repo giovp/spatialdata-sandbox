@@ -9,8 +9,8 @@ import shutil
 ##
 path = Path().resolve()
 # luca's workaround for pycharm
-if not str(path).endswith("xenium"):
-    path /= "xenium"
+if not str(path).endswith("xenium_io"):
+    path /= "xenium_io"
     assert path.exists()
 path_read = path / "data/xenium/outs"
 path_write = path / "data.zarr"

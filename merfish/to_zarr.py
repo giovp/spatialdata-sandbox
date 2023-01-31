@@ -37,7 +37,7 @@ composed = Sequence([scale, translation])
 
 img = iio.imread(path_read / "image.png")
 img = np.expand_dims(img, axis=0)
-img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transform=composed)
+img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transformations={'global': composed})
 ##
 annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"])})
 # single_molecule = sd.PointsModel.parse(coords=adata.X, annotations=pa.Table.from_pandas(annotations))
@@ -81,7 +81,7 @@ print(f'view with "python -m napari_spatialdata view data.zarr"')
 sdata = sd.SpatialData.read(path_write)
 print(sdata)
 
-for el in sdata._gen_elements():
-    t = sdata.get_transformation(el)
+for el in sdata._gen_elements_values():
+    t = sdata.get_all_transformations(el)
     print(t.to_affine_matrix(input_axes=("x", "y"), output_axes=("x", "y")))
 print("read")

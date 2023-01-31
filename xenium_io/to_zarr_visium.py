@@ -10,8 +10,8 @@ def main():
     ##
     path = Path().resolve()
     # luca's workaround for pycharm
-    if not str(path).endswith("xenium"):
-        path /= "xenium"
+    if not str(path).endswith("xenium_io"):
+        path /= "xenium_io"
         assert path.exists()
     path_read = path / "data/visium/"
     path_write = path / "data_visium.zarr"

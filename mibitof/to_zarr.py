@@ -4,6 +4,7 @@ from pathlib import Path
 import spatialdata as sd
 import anndata as ad
 import imageio.v3 as iio
+from spatialdata._core.transformations import Identity
 
 ##
 path = Path().resolve()
@@ -36,13 +37,18 @@ table = sd.TableModel.parse(
 
 ##
 labels = {
-    lib: sd.Labels2DModel.parse(iio.imread(path_read / f"{lib}_labels.png"), dims=("y", "x"))
+    lib: sd.Labels2DModel.parse(
+        iio.imread(path_read / f"{lib}_labels.png"),
+        dims=("y", "x"),
+        transformations={lib: Identity()},
+    )
     for lib in libraries
 }
 images = {
     lib: sd.Image2DModel.parse(
         iio.imread(path_read / f"{lib}_image.png"),
         dims=("y", "x", "c"),
+        transformations={lib: Identity()},
     )
     for lib in libraries
 }
@@ -53,8 +59,6 @@ sdata = sd.SpatialData(
     table=table,
     labels=labels,
     images=images,
-    # transformations={(f"/images/{lib}", lib): None for lib in libraries}
-    # | {(f"/labels/{lib}", lib): None for lib in libraries}
 )
 print(sdata)
 

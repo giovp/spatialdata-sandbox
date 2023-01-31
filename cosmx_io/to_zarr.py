@@ -1,5 +1,5 @@
 ##
-from spatialdata_io import visium
+from spatialdata_io import cosmx
 import spatialdata as sd
 ##
 from pathlib import Path
@@ -8,13 +8,13 @@ import shutil
 ##
 path = Path().resolve()
 # luca's workaround for pycharm
-if not str(path).endswith("visium2"):
-    path /= "visium2"
+if not str(path).endswith("cosmx_io"):
+    path /= "cosmx_io"
     assert path.exists()
-path_read = path / "data"
+path_read = path / "data/data_lung5_rep2"
 path_write = path / "data.zarr"
 ##
-sdata = visium(path_read)
+sdata = cosmx(path_read)
 ##
 if path_write.exists():
     shutil.rmtree(path_write)

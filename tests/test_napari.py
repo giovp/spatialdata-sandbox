@@ -13,8 +13,8 @@ def test_mibitof():
     Interactive(sdata, headless=True)
 
 
-def test_nanostring_cosmx():
-    sdata = SpatialData.read("nanostring_cosmx/data.zarr")
+def test_cosmx_io():
+    sdata = SpatialData.read("cosmx_io/data.zarr")
     Interactive(sdata, headless=True)
 
 
@@ -28,14 +28,14 @@ def test_visium():
     Interactive(sdata, headless=True)
 
 
-def test_visium2():
-    sdata = SpatialData.read("visium2/data.zarr")
+def test_visium_io():
+    sdata = SpatialData.read("visium_io/data.zarr")
     Interactive(sdata, headless=True)
 
 
 @pytest.mark.skip(reason="Skipping because skipping the corrsponding to_zarr()")
-def test_xenium():
-    sdata = SpatialData.read("xenium/data.zarr")
+def test_xenium_io():
+    sdata = SpatialData.read("xenium_io/data.zarr")
     Interactive(sdata, headless=True)
 
 

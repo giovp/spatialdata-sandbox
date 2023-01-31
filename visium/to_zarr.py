@@ -4,7 +4,7 @@ import anndata as ad
 import shutil
 from pathlib import Path
 import spatialdata as sd
-from spatialdata._core.transformations import Scale
+from spatialdata._core.transformations import Scale, Identity
 import re
 import os
 from tqdm import tqdm
@@ -48,7 +48,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     img = table.uns["spatial"][lib_key]["images"]["hires"]
     assert img.dtype == np.float32 and np.min(img) >= 0.0 and np.max(img) <= 1.0
     scaled = (img * 255).astype(np.uint8)
-    scaled = sd.Image2DModel.parse(scaled, transform=transform, dims=("y", "x", "c"))
+    scaled = sd.Image2DModel.parse(scaled, transformations={lib: transform}, dims=("y", "x", "c"))
     images[lib] = scaled
 
     # prepare circles
@@ -57,6 +57,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
         coords=table.obsm["spatial"],
         shape_type="Circle",
         shape_size=radius,
+        transformations={lib: Identity()},
     )
     shapes[lib] = shape_regions
 

@@ -17,9 +17,9 @@ def test_mibitof():
 
 
 @pytest.mark.skip(reason="large dataset")
-def test_nanostring_cosmx():
-    os.chdir(path / "nanostring_cosmx")
-    import nanostring_cosmx.to_zarr
+def test_cosmx_io():
+    os.chdir(path / "cosmx_io")
+    import cosmx_io.to_zarr
 
 
 def test_toy():
@@ -32,12 +32,12 @@ def test_visium():
     import visium.to_zarr
 
 
-def test_visium2():
-    os.chdir(path / "visium2")
-    import visium2.to_zarr
+def test_visium_io():
+    os.chdir(path / "visium_io")
+    import visium_io.to_zarr
 
 
 @pytest.mark.skip(reason="large dataset")
-def test_xenium():
-    os.chdir(path / "xenium")
-    import xenium.to_zarr
+def test_xenium_io():
+    os.chdir(path / "xenium_io")
+    import xenium_io.to_zarr

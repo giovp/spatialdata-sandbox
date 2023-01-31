@@ -48,7 +48,7 @@ transformation = Sequence(
     ]
 )
 x = np.expand_dims(x, axis=0)
-image = sd.Image2DModel.parse(x, dims=('c', "y", "x"), transform=transformation)
+image = sd.Image2DModel.parse(x, dims=('c', "y", "x"), transformations={'global': transformation})
 ##
 # circles
 if PLOT:
