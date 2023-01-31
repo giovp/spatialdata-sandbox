@@ -10,8 +10,9 @@ from tqdm import tqdm
 urls = [
     "https://cf.10xgenomics.com/samples/spatial-exp/2.0.0/CytAssist_FFPE_Human_Breast_Cancer"
     "/CytAssist_FFPE_Human_Breast_Cancer_probe_set.csv",
-    "https://cf.10xgenomics.com/samples/spatial-exp/2.0.0/CytAssist_FFPE_Human_Breast_Cancer"
-    "/CytAssist_FFPE_Human_Breast_Cancer_image.tif",
+    # this image has bad quality and it is not aligned. We need the tissue_image.tif
+    # "https://cf.10xgenomics.com/samples/spatial-exp/2.0.0/CytAssist_FFPE_Human_Breast_Cancer"
+    # "/CytAssist_FFPE_Human_Breast_Cancer_image.tif",
     "https://cf.10xgenomics.com/samples/spatial-exp/2.0.0/CytAssist_FFPE_Human_Breast_Cancer"
     "/CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif",
     "https://cf.10xgenomics.com/samples/spatial-exp/2.0.0/CytAssist_FFPE_Human_Breast_Cancer"
@@ -27,18 +28,16 @@ urls = [
 ##
 os.makedirs("data", exist_ok=True)
 os.makedirs("data/visium", exist_ok=True)
+os.chdir('data/visium')
 for url in tqdm(urls, desc="downloading"):
     command = f"curl -O {url} --output {'data/visium/' + Path(url).name}"
-    os.system(command)
+    if not url.endswith(".tar.gz"):
+        os.system(command)
 
 ##
-os.chdir('data/visium')
 os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_analysis.tar.gz')
 os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_spatial.tar.gz')
-for file in os.listdir():
-    if file.startswith('CytAssist_FFPE_Human_Breast_Cancer_'):
-        shutil.move(file, file.replace('CytAssist_FFPE_Human_Breast_Cancer_', ''))
-shutil.move('spatial/tissue_positions.csv', 'spatial/tissue_positions_list.csv')
+os.system('mv CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif CytAssist_FFPE_Human_Breast_Cancer_image.tif')
 ##
 # from spatialdata_io import read_visium
 # sdata = read_visium('.')
