@@ -45,7 +45,7 @@ annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"])
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
-expression.obs["cell_id"] = np.arange(len(cells))
+expression.obs["cell_id"] = np.array(map(str, np.arange(len(cells))))
 expression = sd.TableModel.parse(
     adata=expression,
     region="/shapes/cells",
@@ -80,8 +80,4 @@ print(f'view with "python -m napari_spatialdata view data.zarr"')
 ##
 sdata = sd.SpatialData.read(path_write)
 print(sdata)
-
-for el in sdata._gen_elements_values():
-    t = sdata.get_all_transformations(el)
-    print(t.to_affine_matrix(input_axes=("x", "y"), output_axes=("x", "y")))
 print("read")

@@ -55,6 +55,9 @@ images = {
 
 ##
 
+table.obs['donor'] = table.obs['donor'].astype('category')
+table.obs['batch'] = table.obs['batch'].astype('category')
+
 sdata = sd.SpatialData(
     table=table,
     labels=labels,
