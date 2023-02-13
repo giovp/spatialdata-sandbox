@@ -1,5 +1,4 @@
 ##
-import pyarrow as pa
 import os
 
 os.environ["USE_PYGEOS"] = "0"
@@ -40,7 +39,7 @@ img = np.expand_dims(img, axis=0)
 img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transformations={'global': composed})
 ##
 annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"])})
-# single_molecule = sd.PointsModel.parse(coords=adata.X, annotations=pa.Table.from_pandas(annotations))
+single_molecule = sd.PointsModel.parse(adata.X, annotation=annotations, feature_key="cell_type")
 
 expression = cells.copy()
 del expression.obsm["region_radius"]
@@ -66,7 +65,7 @@ adata_polygons = sd.PolygonsModel.parse(
 sdata = sd.SpatialData(
     table=expression,
     shapes={"cells": regions},
-    # points={"single_molecule": single_molecule},
+    points={"single_molecule": single_molecule},
     images={"rasterized": img},
     polygons={"anatomical": adata_polygons},
 )

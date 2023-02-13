@@ -15,6 +15,7 @@ path_read = path / "data/data_lung5_rep2"
 path_write = path / "data.zarr"
 ##
 sdata = cosmx(path_read)
+# sdata = cosmx(path_read, transcripts=False)
 ##
 if path_write.exists():
     shutil.rmtree(path_write)

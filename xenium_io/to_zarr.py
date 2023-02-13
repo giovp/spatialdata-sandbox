@@ -21,6 +21,9 @@ sdata = xenium(
     n_jobs=8,
     # morphology_mip=False,
     # morphology_focus=False,
+    # nucleus_boundaries=False,
+    # cell_boundaries=False,
+    # points=False
 )
 print("done")
 ##

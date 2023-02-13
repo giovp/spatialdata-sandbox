@@ -33,3 +33,4 @@ if not path.exists():
 counts_file = "Lung5_Rep2_exprMat_file.csv"
 meta_file = "Lung5_Rep2_metadata_file.csv"
 fov_file = "Lung5_Rep2_fov_positions_file.csv"
+transcripts_file = "Lung5_Rep2_tx_file.csv"

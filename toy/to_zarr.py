@@ -139,12 +139,12 @@ a_circles = sd.ShapesModel.parse(
     shape_type="Circle",
     shape_size=np.sqrt(np.array(sizes) / np.pi),
 )
-# a_points = sd.PointsModel.parse(coords=xy)
+a_points = sd.PointsModel.parse(xy)
 
 ##
 sdata = sd.SpatialData(
     images={"image": image},
-    # points={"points": a_points},
+    points={"points": a_points},
     shapes={"circles": a_circles},
 )
 
