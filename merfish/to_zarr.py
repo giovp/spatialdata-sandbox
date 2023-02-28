@@ -44,7 +44,7 @@ single_molecule = sd.PointsModel.parse(adata.X, annotation=annotations, feature_
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
-expression.obs["cell_id"] = np.array(map(str, np.arange(len(cells))))
+expression.obs["cell_id"] = np.arange(len(cells))
 expression = sd.TableModel.parse(
     adata=expression,
     region="/shapes/cells",
@@ -52,22 +52,22 @@ expression = sd.TableModel.parse(
 )
 xy = cells.obsm["spatial"]
 regions = sd.ShapesModel.parse(
-    coords=xy,
-    shape_type="Circle",
-    shape_size=cells.obsm["region_radius"],
+    xy,
+    geometry=0,
+    radius=cells.obsm["region_radius"],
+    index=expression.obs['cell_id'].copy()
 )
 
-adata_polygons = sd.PolygonsModel.parse(
-    path_read / "anatomical.geojson", instance_key="region_id"
+polygons = sd.ShapesModel.parse(
+    path_read / "anatomical.geojson"
 )
 
 ##
 sdata = sd.SpatialData(
     table=expression,
-    shapes={"cells": regions},
+    shapes={"cells": regions, "anatomical": polygons},
     points={"single_molecule": single_molecule},
     images={"rasterized": img},
-    polygons={"anatomical": adata_polygons},
 )
 print(sdata)
 ##

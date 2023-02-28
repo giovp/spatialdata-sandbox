@@ -135,9 +135,9 @@ if PLOT:
     plt.show()
 ##
 a_circles = sd.ShapesModel.parse(
-    coords=points,
-    shape_type="Circle",
-    shape_size=np.sqrt(np.array(sizes) / np.pi),
+    points,
+    geometry=0,
+    radius=np.sqrt(np.array(sizes) / np.pi),
 )
 a_points = sd.PointsModel.parse(xy)
 
