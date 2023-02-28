@@ -28,16 +28,18 @@ urls = [
 ##
 os.makedirs("data", exist_ok=True)
 os.makedirs("data/visium", exist_ok=True)
-os.chdir('data/visium')
+os.chdir("data/visium")
 for url in tqdm(urls, desc="downloading"):
     command = f"curl -O {url} --output {'data/visium/' + Path(url).name}"
     if not url.endswith(".tar.gz"):
         os.system(command)
 
 ##
-os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_analysis.tar.gz')
-os.system('tar -xvf CytAssist_FFPE_Human_Breast_Cancer_spatial.tar.gz')
-os.system('mv CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif CytAssist_FFPE_Human_Breast_Cancer_image.tif')
+os.system("tar -xvf CytAssist_FFPE_Human_Breast_Cancer_analysis.tar.gz")
+os.system("tar -xvf CytAssist_FFPE_Human_Breast_Cancer_spatial.tar.gz")
+os.system(
+    "mv CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif CytAssist_FFPE_Human_Breast_Cancer_image.tif"
+)
 ##
 # from spatialdata_io import read_visium
 # sdata = read_visium('.')

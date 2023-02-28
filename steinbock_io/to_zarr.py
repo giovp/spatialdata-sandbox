@@ -1,29 +1,18 @@
-##
-from spatialdata_io import xenium
+from spatialdata_io import steinbock
 import spatialdata as sd
-
-##
 from pathlib import Path
 import shutil
 
-##
 path = Path().resolve()
-# luca's workaround for pycharm
-if not str(path).endswith("xenium_io"):
-    path /= "xenium_io"
+if not str(path).endswith("steinbock_io"):
+    path /= "steinbock_io"
     assert path.exists()
-path_read = path / "data/xenium/outs"
+path_read = path / "data" / "steinbock"
 path_write = path / "data.zarr"
 ##
 print("parsing the data... ", end="")
-sdata = xenium(
-    path=str(path_read),
-    n_jobs=8,
-    # morphology_mip=False,
-    # morphology_focus=False,
-    # nucleus_boundaries=False,
-    # cell_boundaries=False,
-    # points=False
+sdata = steinbock(
+    path=path_read,
 )
 print("done")
 ##
