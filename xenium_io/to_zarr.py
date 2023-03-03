@@ -19,6 +19,7 @@ print("parsing the data... ", end="")
 sdata = xenium(
     path=str(path_read),
     n_jobs=8,
+    cells_as_shapes=True,
     # morphology_mip=False,
     # morphology_focus=False,
     # nucleus_boundaries=False,
