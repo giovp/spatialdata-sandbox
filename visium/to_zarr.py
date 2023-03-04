@@ -30,7 +30,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     table.var_names_make_unique()
     table.obs["annotating"] = f"/shapes/{lib}"
     table.obs["library"] = lib
-    table.obs["visium_spot_id"] = np.array(map(str, np.arange(len(table))))
+    table.obs["spot_id"] = np.arange(len(table))
     table_list.append(table)
 
     # setup
@@ -54,9 +54,9 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     # prepare circles
     diameter = table.uns["spatial"][lib_key]["scalefactors"]["spot_diameter_fullres"]
     shape_regions = sd.ShapesModel.parse(
-        coords=table.obsm["spatial"],
-        shape_type="Circle",
-        shape_size=diameter,
+        table.obsm["spatial"],
+        geometry=0,
+        radius=diameter / 2,
         transformations={lib: Identity()},
     )
     shapes[lib] = shape_regions
@@ -73,7 +73,7 @@ adata = sd.TableModel.parse(
     table,
     region=[f"/shapes/{lib}" for lib in libraries],
     region_key="annotating",
-    instance_key="visium_spot_id",
+    instance_key="spot_id",
 )
 
 sdata = sd.SpatialData(
