@@ -21,7 +21,7 @@ libraries = ["point8", "point16", "point23"]
 table_list = []
 for lib in libraries:
     table = ad.read(path_read / f"{lib}_table.h5ad")
-    table.obs["library_id"] = f"/labels/{lib}"
+    table.obs["library_id"] = f"{lib}_labels"
     table_list.append(table)
 
 table = ad.concat(
@@ -30,14 +30,14 @@ table = ad.concat(
 )
 table = sd.TableModel.parse(
     adata=table,
-    region=[f"/labels/{lib}" for lib in libraries],
+    region=[f"{lib}_labels" for lib in libraries],
     region_key="library_id",
     instance_key="cell_id",
 )
 
 ##
 labels = {
-    lib: sd.Labels2DModel.parse(
+    f"{lib}_labels": sd.Labels2DModel.parse(
         iio.imread(path_read / f"{lib}_labels.png"),
         dims=("y", "x"),
         transformations={lib: Identity()},
@@ -45,7 +45,7 @@ labels = {
     for lib in libraries
 }
 images = {
-    lib: sd.Image2DModel.parse(
+    f"{lib}_image": sd.Image2DModel.parse(
         iio.imread(path_read / f"{lib}_image.png"),
         dims=("y", "x", "c"),
         transformations={lib: Identity()},

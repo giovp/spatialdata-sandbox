@@ -6,6 +6,15 @@ import pytest
 path = pathlib.Path(__file__).parent.parent.resolve()
 
 
+@pytest.mark.skip(reason="large dataset")
+def test_cosmx_io():
+    os.chdir(path / "cosmx_io")
+    import cosmx_io.to_zarr
+
+def test_mcmicro_io():
+    os.chdir(path / "mcmicro_io")
+    import mcmicro_io.to_zarr
+
 def test_merfish():
     os.chdir(path / "merfish")
     import merfish.to_zarr
@@ -16,11 +25,9 @@ def test_mibitof():
     import mibitof.to_zarr
 
 
-@pytest.mark.skip(reason="large dataset")
-def test_cosmx_io():
-    os.chdir(path / "cosmx_io")
-    import cosmx_io.to_zarr
-
+def test_steinbock_io():
+    os.chdir(path / "steinbock_io")
+    import steinbock_io.to_zarr
 
 def test_toy():
     os.chdir(path / "toy")
