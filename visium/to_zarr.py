@@ -28,7 +28,7 @@ for lib in tqdm(libraries, desc="loading visium libraries"):
     # prepare table
     table = ad.read_h5ad(path_read / "tables" / f"{lib}.h5ad")
     table.var_names_make_unique()
-    table.obs["annotating"] = f"/shapes/{lib}"
+    table.obs["annotating"] = lib
     table.obs["library"] = lib
     table.obs["spot_id"] = np.arange(len(table))
     table_list.append(table)
@@ -71,7 +71,7 @@ table = ad.concat(
 del table.obsm["spatial"]
 adata = sd.TableModel.parse(
     table,
-    region=[f"/shapes/{lib}" for lib in libraries],
+    region=[libraries],
     region_key="annotating",
     instance_key="spot_id",
 )

@@ -45,9 +45,11 @@ expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
 expression.obs["cell_id"] = np.arange(len(cells))
+expression.obs['region'] = 'cells'
 expression = sd.TableModel.parse(
     adata=expression,
-    region="/shapes/cells",
+    region="cells",
+    region_key='region',
     instance_key="cell_id",
 )
 xy = cells.obsm["spatial"]
