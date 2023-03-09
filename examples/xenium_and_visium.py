@@ -6,12 +6,16 @@ from spatialdata._core.transformations import Sequence
 from napari_spatialdata import Interactive
 from spatialdata_io import xenium, visium
 
-SPATIALDATA_SANDBOX_PATH = "../data/spatialdata-sandbox"
-XENIUM_RAW_DATA_PATH = os.path.join(SPATIALDATA_SANDBOX_PATH, "xenium_io/data/xenium/outs")
+SPATIALDATA_SANDBOX_PATH = "../../spatialdata-sandbox"
+XENIUM_RAW_DATA_PATH = os.path.join(
+    SPATIALDATA_SANDBOX_PATH, "xenium_io/data/xenium/outs"
+)
 VISIUM_RAW_DATA_PATH = os.path.join(SPATIALDATA_SANDBOX_PATH, "xenium_io/data/visium")
 XENIUM_SDATA_PATH = os.path.join(SPATIALDATA_SANDBOX_PATH, "xenium_io/data.zarr")
 VISIUM_SDATA_PATH = os.path.join(SPATIALDATA_SANDBOX_PATH, "xenium_io/data_visium.zarr")
-LANDMARKS_SDATA_PATH = os.path.join(SPATIALDATA_SANDBOX_PATH, "xenium_io/landmarks.zarr")
+LANDMARKS_SDATA_PATH = os.path.join(
+    SPATIALDATA_SANDBOX_PATH, "xenium_io/landmarks.zarr"
+)
 
 assert os.path.isdir(XENIUM_RAW_DATA_PATH)
 assert os.path.isdir(VISIUM_RAW_DATA_PATH)
@@ -77,7 +81,11 @@ affine = align_elements_using_landmarks(
     new_coordinate_system="aligned",
 )
 
-from spatialdata._core._spatialdata_ops import get_transformation, set_transformation, remove_transformation
+from spatialdata._core._spatialdata_ops import (
+    get_transformation,
+    set_transformation,
+    remove_transformation,
+)
 
 for element in [
     visium_sdata.images["CytAssist_FFPE_Human_Breast_Cancer_full_image"],
@@ -95,14 +103,24 @@ merged = sd.SpatialData(
         "xenium": xenium_sdata.images["morphology_mip"],
         "visium": visium_sdata.images["CytAssist_FFPE_Human_Breast_Cancer_full_image"],
     },
-    shapes={"CytAssist_FFPE_Human_Breast_Cancer": visium_sdata.shapes["CytAssist_FFPE_Human_Breast_Cancer"]},
+    shapes={
+        "CytAssist_FFPE_Human_Breast_Cancer": visium_sdata.shapes[
+            "CytAssist_FFPE_Human_Breast_Cancer"
+        ]
+    },
     table=visium_sdata.table,
 )
 
-# min_coordinate=[12790, 12194], max_coordinate=[15100, 14221]
+min_coordinate = [12790, 12194]
+max_coordinate = [15100, 14221]
 cropped = merged.query.bounding_box(
-    min_coordinate=[0, 0], max_coordinate=[5000, 5000], axes=["y", "x"], target_coordinate_system="aligned"
+    min_coordinate=min_coordinate,
+    max_coordinate=max_coordinate,
+    axes=["y", "x"],
+    target_coordinate_system="aligned",
 )
+# cropped.add_image('xenium_full', xenium_sdata.images['morphology_mip'])
+# cropped.add_image('visium_full', visium_sdata.images['CytAssist_FFPE_Human_Breast_Cancer_full_image'])
 # Interactive(cropped)
 ##
 from spatialdata._dl.datasets import ImageTilesDataset
@@ -133,8 +151,8 @@ tiles_sdata = SpatialData(
 )
 
 ##
-Interactive([merged, cropped])
-# Interactive(tiles_sdata)
+# Interactive([merged, cropped])
+Interactive([tiles_sdata, cropped])
 ##
 
 # from torch.utils.data import DataLoader
