@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from tqdm import tqdm
+import subprocess
 
 urls = [
     "https://zenodo.org/record/7412972/files/cells.h5ad",
@@ -16,9 +17,9 @@ os.makedirs("data", exist_ok=True)
 os.makedirs("data/steinbock", exist_ok=True)
 for url in tqdm(urls, desc="downloading"):
     command = f"curl {url} --output 'data/steinbock/{Path(url).name}'"
-    os.system(command)
+    subprocess.run(command, shell=True, check=True)
 
 os.chdir("data/steinbock")
-os.system("unzip masks_ilastik.zip")
-os.system("unzip masks_deepcell.zip")
-os.system("unzip ome.zip")
+subprocess.run("unzip masks_ilastik.zip", shell=True, check=True)
+subprocess.run("unzip masks_deepcell.zip", shell=True, check=True)
+subprocess.run("unzip ome.zip", shell=True, check=True)

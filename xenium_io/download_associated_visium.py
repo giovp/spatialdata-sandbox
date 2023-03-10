@@ -30,7 +30,7 @@ os.makedirs("data", exist_ok=True)
 os.makedirs("data/visium", exist_ok=True)
 os.chdir("data/visium")
 for url in tqdm(urls, desc="downloading"):
-    command = f"curl -O {url} --output {'data/visium/' + Path(url).name}"
+    command = f"curl -o {'data/visium/' + Path(url).name} {url}"
     if not url.endswith(".tar.gz"):
         os.system(command)
 

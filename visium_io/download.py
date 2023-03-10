@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 ##
 import os
-import shutil
+import subprocess
 from pathlib import Path
-import scanpy as sc
 
 import sys
 
@@ -30,5 +29,5 @@ for url in urls:
     name = Path(url).name
     download(url, os.path.join("data", name), name)
 
-os.system("tar -xzf data/Visium_Mouse_Olfactory_Bulb_spatial.tar.gz -C data")
-os.system("rm data/Visium_Mouse_Olfactory_Bulb_spatial.tar.gz")
+subprocess.run("tar -xzf data/Visium_Mouse_Olfactory_Bulb_spatial.tar.gz -C data", shell=True, check=True)
+subprocess.run("rm data/Visium_Mouse_Olfactory_Bulb_spatial.tar.gz", shell=True, check=True)

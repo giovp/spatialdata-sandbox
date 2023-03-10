@@ -27,13 +27,20 @@ def is_aria2c_installed():
 
 def download(url, outfile, desc):
     # aria2c (maybe) is faster than urllib
-    if not is_aria2c_installed():
-        with TqdmDownload(desc="downloading " + desc) as t:
-            urllib.request.urlretrieve(url, outfile, t.update_to)
+    if not is_aria2c_installed() or True:
+        subprocess.check_call(
+            [
+                "curl",
+                "-o",
+                outfile,
+                url,
+            ]
+        )
     else:
         subprocess.check_call(
             [
                 "aria2c",
+                "--allow-overwrite",
                 "-x",
                 "4",
                 "--dir",
