@@ -20,6 +20,6 @@ for url in tqdm(urls, desc="downloading"):
     subprocess.run(command, shell=True, check=True)
 
 os.chdir("data/steinbock")
-subprocess.run("unzip masks_ilastik.zip", shell=True, check=True)
-subprocess.run("unzip masks_deepcell.zip", shell=True, check=True)
-subprocess.run("unzip ome.zip", shell=True, check=True)
+subprocess.run("unzip -o masks_ilastik.zip", shell=True, check=True)
+subprocess.run("unzip -o masks_deepcell.zip", shell=True, check=True)
+subprocess.run("unzip -o ome.zip", shell=True, check=True)
