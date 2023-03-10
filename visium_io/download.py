@@ -24,6 +24,7 @@ urls = [
 ]
 
 ##
+os.makedirs("data", exist_ok=True)
 for url in urls:
     print(url)
     name = Path(url).name
