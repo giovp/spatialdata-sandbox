@@ -26,7 +26,7 @@ urls = [
 ]
 
 ##
-os.makedirs("data", exist_ok=True)
+os.makedirs("../xenium_rep1_io/data", exist_ok=True)
 os.makedirs("data/visium", exist_ok=True)
 os.chdir("data/visium")
 for url in tqdm(urls, desc="downloading"):
