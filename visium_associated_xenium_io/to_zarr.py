@@ -1,9 +1,11 @@
 ##
 from spatialdata_io import visium
 import spatialdata as sd
+import shutil
 
 ##
 from pathlib import Path
+
 
 ##
 def main():
@@ -16,7 +18,13 @@ def main():
     path_read = path / "data"
     path_write = path / "data.zarr"
     ##
+    print("reading the data... ", end="")
     sdata_visium = visium(str(path_read))
+    print("done")
+
+    print("writing the data... ", end="")
+    if path_write.exists():
+        shutil.rmtree(path_write)
     sdata_visium.write(str(path_write))
     print("done")
     ##
