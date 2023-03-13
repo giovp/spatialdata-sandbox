@@ -10,17 +10,17 @@ def main():
     ##
     path = Path().resolve()
     # luca's workaround for pycharm
-    if not str(path).endswith("xenium_io"):
-        path /= "xenium_io"
+    if not str(path).endswith("visium_associated_xenium_io"):
+        path /= "visium_associated_xenium_io"
         assert path.exists()
-    path_read = path / "data/visium/"
-    path_write = path / "data_visium.zarr"
+    path_read = path / "data"
+    path_write = path / "data.zarr"
     ##
     sdata_visium = visium(str(path_read))
     sdata_visium.write(str(path_write))
     print("done")
     ##
-    print(f'view with "python -m spatialdata view data_visium.zarr"')
+    print(f'view with "python -m spatialdata view data.zarr"')
     print("read")
     sdata = sd.SpatialData.read(path_write)
     print(sdata)

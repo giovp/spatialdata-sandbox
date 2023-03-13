@@ -148,3 +148,4 @@ processed/
 *.RData
 outs/
 *.zip
+generated_data/
