@@ -123,7 +123,7 @@ cropped = merged.query.bounding_box(
 # cropped.add_image('visium_full', visium_sdata.images['CytAssist_FFPE_Human_Breast_Cancer_full_image'])
 # Interactive(cropped)
 ##
-from spatialdata._dl.datasets import ImageTilesDataset
+from spatialdata._dataloader.datasets import ImageTilesDataset
 from tqdm import tqdm
 
 dataset = ImageTilesDataset(
