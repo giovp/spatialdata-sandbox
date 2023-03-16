@@ -1,14 +1,9 @@
 import numpy as np
 from spatial_image import SpatialImage
 
-from spatialdata import Labels2DModel
-from spatialdata._core._spatial_query import bounding_box_query
-from spatialdata._core._spatialdata_ops import (
-    get_transformation,
-    remove_transformation,
-    set_transformation,
-)
-from spatialdata._core.transformations import Affine, Scale, Sequence
+from spatialdata.models import Labels2DModel
+from spatialdata import bounding_box_query, transform
+from spatialdata.transformations import set_transformation, get_transformation, remove_transformation, Affine, Scale, Sequence
 
 
 def _visualize_crop_affine_labels_2d() -> None:
@@ -98,8 +93,8 @@ def _visualize_crop_affine_labels_2d() -> None:
         d["2 cropped_rotated"] = labels_result_rotated
 
         assert isinstance(labels_result_rotated, SpatialImage)
-        transform = labels_result_rotated.attrs["transform"]["rotated"]
-        transform_rotated_processed = transform.transform(labels_result_rotated, maintain_positioning=True)
+        transformation = labels_result_rotated.attrs["transform"]["rotated"]
+        transform_rotated_processed = transform(labels_result_rotated, transformation)
         transform_rotated_processed_recropped = bounding_box_query(
             transform_rotated_processed,
             axes=("y", "x"),
@@ -116,7 +111,7 @@ def _visualize_crop_affine_labels_2d() -> None:
     sequence = Sequence([Scale([0.25, 0.25], axes=("x", "y")), affine])
     set_transformation(multiscale_labels, sequence, "rotated")
 
-    from spatialdata._core._rasterize import rasterize
+    from spatialdata._core.operations.rasterize import rasterize
 
     rasterized = rasterize(
         multiscale_labels,

@@ -2,7 +2,8 @@
 # data preparation
 import os
 import spatialdata as sd
-from spatialdata._core.transformations import Sequence
+import spatialdata._io.io_zarr
+from spatialdata.transformations.transformations import Sequence
 from napari_spatialdata import Interactive
 from spatialdata_io import xenium, visium
 
@@ -24,7 +25,7 @@ assert os.path.isdir(VISIUM_RAW_DATA_PATH)
 ALREADY_IN_ZARR = True
 
 if ALREADY_IN_ZARR:
-    xenium_sdata = sd.read_zarr(XENIUM_SDATA_PATH)
+    xenium_sdata = spatialdata._io.io_zarr.read_zarr(XENIUM_SDATA_PATH)
 else:
     # here we read the raw data into spatialdata objects
     print("reading the xenium data... ", end="")
@@ -41,7 +42,7 @@ print(xenium_sdata)
 
 
 if ALREADY_IN_ZARR:
-    visium_sdata = sd.read_zarr(VISIUM_SDATA_PATH)
+    visium_sdata = spatialdata._io.io_zarr.read_zarr(VISIUM_SDATA_PATH)
 else:
     print("reading the visium data... ", end="")
     visium_sdata = visium(VISIUM_RAW_DATA_PATH)
@@ -63,13 +64,13 @@ merged = sd.SpatialData(
 # let's save them to Zarr so that we can use in the future if needed
 ALREADY_IN_ZARR = True
 if ALREADY_IN_ZARR:
-    landmarks_sdata = sd.read_zarr(LANDMARKS_SDATA_PATH)
+    landmarks_sdata = spatialdata._io.io_zarr.read_zarr(LANDMARKS_SDATA_PATH)
 else:
     landmarks_sdata = sd.SpatialData(shapes=merged.shapes)
     landmarks_sdata.write(LANDMARKS_SDATA_PATH, overwrite=True)
 
 
-from spatialdata._core._transform_elements import align_elements_using_landmarks
+from spatialdata._core.operations.transform import align_elements_using_landmarks
 
 affine = align_elements_using_landmarks(
     references_coords=landmarks_sdata.shapes["xenium_landmarks"],
@@ -81,11 +82,7 @@ affine = align_elements_using_landmarks(
     new_coordinate_system="aligned",
 )
 
-from spatialdata._core._spatialdata_ops import (
-    get_transformation,
-    set_transformation,
-    remove_transformation,
-)
+from spatialdata.transformations.operations import set_transformation, get_transformation, remove_transformation
 
 for element in [
     visium_sdata.images["CytAssist_FFPE_Human_Breast_Cancer_full_image"],
@@ -123,7 +120,7 @@ cropped = merged.query.bounding_box(
 # cropped.add_image('visium_full', visium_sdata.images['CytAssist_FFPE_Human_Breast_Cancer_full_image'])
 # Interactive(cropped)
 ##
-from spatialdata._dataloader.datasets import ImageTilesDataset
+from spatialdata.dataloader.datasets import ImageTilesDataset
 from tqdm import tqdm
 
 dataset = ImageTilesDataset(

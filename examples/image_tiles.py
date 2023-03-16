@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from skimage import draw
 
 import spatialdata as sd
-from spatialdata._dataloader.datasets import ImageTilesDataset
+from spatialdata.dataloader.datasets import ImageTilesDataset
 
 ##
 coordinates = np.array([[10, 10], [20, 20], [50, 30], [90, 70], [20, 80]])

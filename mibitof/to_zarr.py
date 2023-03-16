@@ -1,10 +1,11 @@
 ##
 import shutil
 from pathlib import Path
-import spatialdata as sd
 import anndata as ad
 import imageio.v3 as iio
-from spatialdata._core.transformations import Identity
+from spatialdata import SpatialData
+from spatialdata.transformations import Identity
+from spatialdata.models import Labels2DModel, Image2DModel, TableModel
 
 ##
 path = Path().resolve()
@@ -28,7 +29,7 @@ table = ad.concat(
     table_list,
     keys=libraries,
 )
-table = sd.TableModel.parse(
+table = TableModel.parse(
     adata=table,
     region=[f"{lib}_labels" for lib in libraries],
     region_key="library_id",
@@ -37,7 +38,7 @@ table = sd.TableModel.parse(
 
 ##
 labels = {
-    f"{lib}_labels": sd.Labels2DModel.parse(
+    f"{lib}_labels": Labels2DModel.parse(
         iio.imread(path_read / f"{lib}_labels.png"),
         dims=("y", "x"),
         transformations={lib: Identity()},
@@ -45,7 +46,7 @@ labels = {
     for lib in libraries
 }
 images = {
-    f"{lib}_image": sd.Image2DModel.parse(
+    f"{lib}_image": Image2DModel.parse(
         iio.imread(path_read / f"{lib}_image.png"),
         dims=("y", "x", "c"),
         transformations={lib: Identity()},
@@ -58,7 +59,7 @@ images = {
 table.obs['donor'] = table.obs['donor'].astype('category')
 table.obs['batch'] = table.obs['batch'].astype('category')
 
-sdata = sd.SpatialData(
+sdata = SpatialData(
     table=table,
     labels=labels,
     images=images,
@@ -72,6 +73,6 @@ sdata.write(path_write)
 print("done")
 print(f'view with "python -m spatialdata view data.zarr"')
 ##
-sdata = sd.SpatialData.read(path_write)
+sdata = SpatialData.read(path_write)
 print(sdata)
 print("read")
