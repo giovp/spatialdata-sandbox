@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 from pathlib import Path
 import spatialdata as sd
-from spatialdata._core.transformations import Scale, Translation, Sequence
+from spatialdata.transformations.transformations import Scale, Translation, Sequence
 
 PLOT = False
 
@@ -48,7 +48,7 @@ transformation = Sequence(
     ]
 )
 x = np.expand_dims(x, axis=0)
-image = sd.Image2DModel.parse(x, dims=('c', "y", "x"), transformations={'global': transformation})
+image = sd.models.Image2DModel.parse(x, dims=('c', "y", "x"), transformations={'global': transformation})
 ##
 # circles
 if PLOT:
@@ -134,12 +134,12 @@ if PLOT:
     ax.scatter(xy[:, 0], xy[:, 1], s=1)
     plt.show()
 ##
-a_circles = sd.ShapesModel.parse(
+a_circles = sd.models.ShapesModel.parse(
     points,
     geometry=0,
     radius=np.sqrt(np.array(sizes) / np.pi),
 )
-a_points = sd.PointsModel.parse(xy)
+a_points = sd.models.PointsModel.parse(xy)
 
 ##
 sdata = sd.SpatialData(

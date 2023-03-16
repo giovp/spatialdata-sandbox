@@ -45,6 +45,6 @@ def test_visium_io():
 
 
 @pytest.mark.skip(reason="large dataset")
-def test_xenium_io():
-    os.chdir(path / "xenium_io")
+def test_xenium_rep1_io():
+    os.chdir(path / "xenium_rep1_io")
     import xenium_rep1_io.to_zarr

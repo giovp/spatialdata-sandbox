@@ -7,10 +7,11 @@ import numpy as np
 import scanpy as sc
 import shutil
 from pathlib import Path
-import spatialdata as sd
 import imageio.v3 as iio
 import pandas as pd
-from spatialdata._core.transformations import Scale, Translation, Sequence
+from spatialdata import SpatialData
+from spatialdata.transformations import Scale, Translation, Sequence
+from spatialdata.models import Image2DModel, PointsModel, ShapesModel, TableModel
 
 ##
 path = Path().resolve()
@@ -36,36 +37,36 @@ composed = Sequence([scale, translation])
 
 img = iio.imread(path_read / "image.png")
 img = np.expand_dims(img, axis=0)
-img = sd.Image2DModel.parse(img, dims=("c", "y", "x"), transformations={'global': composed})
+img = Image2DModel.parse(img, dims=("c", "y", "x"), transformations={'global': composed})
 ##
 annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"])})
-single_molecule = sd.PointsModel.parse(adata.X, annotation=annotations, feature_key="cell_type")
+single_molecule = PointsModel.parse(adata.X, annotation=annotations, feature_key="cell_type")
 
 expression = cells.copy()
 del expression.obsm["region_radius"]
 del expression.obsm["spatial"]
 expression.obs["cell_id"] = np.arange(len(cells))
 expression.obs['region'] = 'cells'
-expression = sd.TableModel.parse(
+expression = TableModel.parse(
     adata=expression,
     region="cells",
     region_key='region',
     instance_key="cell_id",
 )
 xy = cells.obsm["spatial"]
-regions = sd.ShapesModel.parse(
+regions = ShapesModel.parse(
     xy,
     geometry=0,
     radius=cells.obsm["region_radius"],
     index=expression.obs['cell_id'].copy()
 )
 
-polygons = sd.ShapesModel.parse(
+polygons = ShapesModel.parse(
     path_read / "anatomical.geojson"
 )
 
 ##
-sdata = sd.SpatialData(
+sdata = SpatialData(
     table=expression,
     shapes={"cells": regions, "anatomical": polygons},
     points={"single_molecule": single_molecule},
@@ -79,6 +80,6 @@ sdata.write(path_write)
 print("done")
 print(f'view with "python -m napari_spatialdata view data.zarr"')
 ##
-sdata = sd.SpatialData.read(path_write)
+sdata = SpatialData.read(path_write)
 print(sdata)
 print("read")
