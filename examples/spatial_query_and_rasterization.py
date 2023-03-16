@@ -94,7 +94,7 @@ def _visualize_crop_affine_labels_2d() -> None:
 
         assert isinstance(labels_result_rotated, SpatialImage)
         transformation = labels_result_rotated.attrs["transform"]["rotated"]
-        transform_rotated_processed = transform(labels_result_rotated, transformation)
+        transform_rotated_processed = transform(labels_result_rotated, transformation, maintain_positioning=True)
         transform_rotated_processed_recropped = bounding_box_query(
             transform_rotated_processed,
             axes=("y", "x"),
