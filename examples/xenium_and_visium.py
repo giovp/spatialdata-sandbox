@@ -69,9 +69,6 @@ else:
     landmarks_sdata = sd.SpatialData(shapes=merged.shapes)
     landmarks_sdata.write(LANDMARKS_SDATA_PATH, overwrite=True)
 
-
-from spatialdata._core.operations.transform import align_elements_using_landmarks
-
 affine = align_elements_using_landmarks(
     references_coords=landmarks_sdata.shapes["xenium_landmarks"],
     moving_coords=landmarks_sdata.shapes["visium_landmarks"],
@@ -82,7 +79,8 @@ affine = align_elements_using_landmarks(
     new_coordinate_system="aligned",
 )
 
-from spatialdata.transformations.operations import set_transformation, get_transformation, remove_transformation
+from spatialdata.transformations.operations import set_transformation, get_transformation, remove_transformation, \
+    align_elements_using_landmarks
 
 for element in [
     visium_sdata.images["CytAssist_FFPE_Human_Breast_Cancer_full_image"],
