@@ -12,7 +12,10 @@ path = Path().resolve()
 if not str(path).endswith("xenium_rep2_io"):
     path /= "xenium_rep2_io"
     assert path.exists()
-path_read = path / "data/xenium"
+# new path
+# path_read = path / "data/xenium"
+# old path
+path_read = path / "data/xenium/outs"
 path_write = path / "data.zarr"
 ##
 print("parsing the data... ", end="")
