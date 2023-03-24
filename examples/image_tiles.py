@@ -38,10 +38,10 @@ for spot_color, centroid in zip(colors, coordinates):
 # plt.show()
 
 ##
-sd_image = sd.Image2DModel.parse(image, dims=("y", "x", "c"))
+sd_image = sd.models.Image2DModel.parse(image, dims=("y", "x", "c"))
 
 # circles coordinates are xy, so we flip them here.
-circles = sd.ShapesModel.parse(coordinates[:, [1, 0]], radius=radius, geometry=0)
+circles = sd.models.ShapesModel.parse(coordinates[:, [1, 0]], radius=radius, geometry=0)
 sdata = sd.SpatialData(images={"image": sd_image}, shapes={"spots": circles})
 sdata
 
