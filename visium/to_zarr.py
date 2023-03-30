@@ -88,7 +88,7 @@ if path_write.exists():
     shutil.rmtree(path_write)
 sdata.write(path_write)
 print("done")
-print(f'view with "python -m spatialdata view data.zarr"')
+print(f'view with "python -m napari_spatialdata view data.zarr"')
 sdata = sd.SpatialData.read(path_write)
 print(sdata)
 print("read")

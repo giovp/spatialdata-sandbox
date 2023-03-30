@@ -28,7 +28,7 @@ def main():
     sdata_visium.write(str(path_write))
     print("done")
     ##
-    print(f'view with "python -m spatialdata view data.zarr"')
+    print(f'view with "python -m napari_spatialdata view data.zarr"')
     print("read")
     sdata = sd.SpatialData.read(path_write)
     print(sdata)
