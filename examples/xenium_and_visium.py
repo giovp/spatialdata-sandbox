@@ -1,5 +1,7 @@
 ##
 import os
+from anndata import AnnData
+import torch.nn.functional as F
 import numpy as np
 from spatial_image import SpatialImage
 import spatialdata as sd
@@ -139,17 +141,30 @@ dataset = ImageTilesDataset(
 )
 
 
+def _get_clonal_classes(adata: AnnData) -> list[str]:
+    categories = adata.obs["clone"].cat.categories.tolist()
+    return categories
+
+
 class ClonalTileDataset(torch.utils.data.Dataset):
     def __init__(self, tile_dataset: ImageTilesDataset):
         self.tile_dataset = tile_dataset
+        self.categories = _get_clonal_classes(self.tile_dataset.sdata.table)
 
     def __len__(self):
         return len(self.tile_dataset)
 
     def __getitem__(self, idx):
         tile, region_name, region_index = self.tile_dataset[idx]
-        clonal_information = self.tile_dataset.sdata.table[region_index].obs["clone"].values[0]
-        return tile, clonal_information
+        clonal_information = (
+            self.tile_dataset.sdata.table[region_index].obs["clone"].values[0]
+        )
+        clonal_information = self.categories.index(clonal_information)
+        clonal_one_hot = F.one_hot(
+            torch.tensor(clonal_information), num_classes=len(self.categories)
+        )
+        return tile, clonal_one_hot.float()
+
 
 clonal_tile_dataset = ClonalTileDataset(dataset)
 
@@ -272,6 +287,75 @@ train_dl = tiles_data_module.train_dataloader()
 val_dl = tiles_data_module.val_dataloader()
 test_dl = tiles_data_module.test_dataloader()
 
+
+class DenseNetModel(pl.LightningModule):
+    def __init__(self, learning_rate: float, in_channels: int, num_classes: int):
+        super().__init__()
+
+        # store hyperparameters
+        self.save_hyperparameters()
+
+        self.loss_function = CrossEntropyLoss()
+
+        # make the model
+        self.model = DenseNet121(
+            spatial_dims=2, in_channels=in_channels, out_channels=num_classes
+        )
+
+    def forward(self, x) -> torch.Tensor:
+        return self.model(x)
+
+    def _compute_loss_from_batch(
+        self, batch: Dict[str, torch.Tensor], batch_idx: int
+    ) -> float:
+        inputs = batch[0]
+        labels = batch[1]
+
+        outputs = self.model(inputs)
+        return self.loss_function(outputs, labels)
+
+    def training_step(
+        self, batch: Dict[str, torch.Tensor], batch_idx: int
+    ) -> Dict[str, float]:
+        # compute the loss
+        loss = self._compute_loss_from_batch(batch=batch, batch_idx=batch_idx)
+
+        # perform logging
+        self.log("training_loss", loss, batch_size=len(batch[0]))
+
+        return {"loss": loss}
+
+    def validation_step(self, batch: Dict[str, torch.Tensor], batch_idx: int) -> float:
+        return self._compute_loss_from_batch(batch=batch, batch_idx=batch_idx)
+
+    def test_step(self, batch, batch_idx):
+        imgs, labels = batch
+        preds = self.model(imgs).argmax(dim=-1)
+        acc = (labels == preds).float().mean()
+        # By default logs it per epoch (weighted average over batches), and returns it afterwards
+        self.log("test_acc", acc)
+
+    def configure_optimizers(self) -> Adam:
+        return Adam(self.model.parameters(), lr=self.hparams.learning_rate)
+
+
 if __name__ == "__main__":
     t = train_dl.__iter__().__next__()
     print(t)
+    model = DenseNetModel(
+        learning_rate=0.05, in_channels=1, num_classes=len(_get_clonal_classes(adata))
+    )
+
+    trainer = pl.Trainer(
+        max_epochs=30,
+        accelerator="auto",
+        devices=1 if torch.cuda.is_available() else None,  # limiting got iPython runs
+        logger=CSVLogger(save_dir="logs/"),
+        callbacks=[
+            LearningRateMonitor(logging_interval="step"),
+            TQDMProgressBar(refresh_rate=10),
+        ],
+    )
+
+    trainer.fit(model, datamodule=tiles_data_module)
+    trainer.test(model, datamodule=tiles_data_module)
