@@ -149,3 +149,4 @@ processed/
 outs/
 *.zip
 generated_data/
+*.nextflow*
