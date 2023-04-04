@@ -147,9 +147,9 @@ class ClonalTileDataset(torch.utils.data.Dataset):
         return len(self.tile_dataset)
 
     def __getitem__(self, idx):
-        tile, region_name, region_index = self.tile_dataset[idx]
+        tile, _, _ = self.tile_dataset[idx]
         clonal_information = (
-            self.tile_dataset.sdata.table[region_index].obs["clone"].values[0]
+            self.tile_dataset.sdata.table[idx].obs["clone"].values[0]
         )
         clonal_information = self.categories.index(clonal_information)
         clonal_one_hot = F.one_hot(
@@ -171,7 +171,7 @@ def get_dataset() -> ImageTilesDataset:
         sdata=merged,
         regions_to_images={"CytAssist_FFPE_Human_Breast_Cancer": "xenium"},
         tile_dim_in_units=visium_circle_diameter,
-        tile_dim_in_pixels=128,
+        tile_dim_in_pixels=32,
         target_coordinate_system="aligned",
     )
     ##
