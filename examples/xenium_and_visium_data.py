@@ -25,12 +25,18 @@ import torchvision
 import torch
 from torch.utils.data import DataLoader
 from pytorch_lightning import LightningDataModule
+import torch.multiprocessing as mp
+
 
 ##
-SMALL_DATASET = False
+# to fix a mysterious bug with dataloaders in the gpu machine
+mp.set_start_method("spawn", force=True)  # You can also try 'fork' or 'forkserver'
+
+# SMALL_DATASET = False
+SMALL_DATASET = True
 
 
-def load_data() -> tuple[SpatialData, SpatialData, SpatialData]:
+def load_raw_data() -> tuple[SpatialData, SpatialData]:
     # loading the Xenium and Visium SpatialData objects
     print("current working directory:", os.getcwd())
     SPATIALDATA_SANDBOX_PATH = "."
@@ -57,107 +63,138 @@ def load_data() -> tuple[SpatialData, SpatialData, SpatialData]:
     VISIUM_CLONAL_DATA = os.path.join(GENERATED_DATA_PATH, "visium_copyKat.h5ad")
     assert os.path.isfile(VISIUM_CLONAL_DATA)
     adata = sc.read_h5ad(VISIUM_CLONAL_DATA)
-
-    ##
-    # create a dataset with tiles, one for each Visium circle, but around the Xenium image
-    merged = sd.SpatialData(
-        images={
-            "xenium": xenium_sdata.images["morphology_mip"],
-            "visium": visium_sdata.images[
-                "CytAssist_FFPE_Human_Breast_Cancer_full_image"
-            ],
-        },
-        shapes={
-            "CytAssist_FFPE_Human_Breast_Cancer": visium_sdata.shapes[
-                "CytAssist_FFPE_Human_Breast_Cancer"
-            ]
-        },
-        table=visium_sdata.table,
-    )
-
     s = adata.obs["clone"]
-    s.index = merged.table.obs.index
+    s.index = visium_sdata.table.obs.index
     visium_sdata.table.obs["clone"] = s
 
-    if SMALL_DATASET:
+    return xenium_sdata, visium_sdata
+
+
+class TileDataset(torch.utils.data.Dataset):
+    CATEGORICAL_COLUMN = "celltype_major"
+
+    def __init__(self, transform = None):
+        self.transform = transform
+        self.dataset0, self.dataset1 = self._init_tiles()
+        self.categories = self.dataset0.sdata.table.obs[
+            self.CATEGORICAL_COLUMN
+        ].cat.categories.tolist()
+
+    def _init_tiles(self) -> ImageTilesDataset:
+        xenium_sdata, visium_sdata = load_raw_data()
+
+        # create a dataset with tiles, one for each Xenium cell, but around the Visium H&E image
+        merged = sd.SpatialData(
+            images={
+                "morphology_mip": xenium_sdata.images["morphology_mip"],
+                "CytAssist_FFPE_Human_Breast_Cancer_full_image": visium_sdata.images[
+                    "CytAssist_FFPE_Human_Breast_Cancer_full_image"
+                ],
+            },
+            shapes={"cell_circles": xenium_sdata.shapes["cell_circles"]},
+            table=xenium_sdata.table,
+        )
+        if SMALL_DATASET:
+            merged = self._crop_dataset(merged)
+
+        circles = merged["cell_circles"]
+        t = get_transformation(circles, "aligned")
+
+        transformed_circles = transform(circles, t)
+        xenium_circles_diameter = 2 * np.mean(transformed_circles.radius)
+
+        dataset0 = ImageTilesDataset(
+            sdata=merged,
+            regions_to_images={
+                "cell_circles": "CytAssist_FFPE_Human_Breast_Cancer_full_image"
+            },
+            tile_dim_in_units=4 * xenium_circles_diameter,
+            tile_dim_in_pixels=32,
+            target_coordinate_system="aligned",
+        )
+
+        dataset1 = ImageTilesDataset(
+            sdata=merged,
+            regions_to_images={"cell_circles": "morphology_mip"},
+            tile_dim_in_units=2 * xenium_circles_diameter,
+            tile_dim_in_pixels=32,
+            target_coordinate_system="aligned",
+        )
+
+        if SMALL_DATASET and False:
+            self._napari_visualization(merged, dataset0)
+            self._napari_visualization(merged, dataset1)
+            os._exit(0)
+
+        visium_image = merged['CytAssist_FFPE_Human_Breast_Cancer_full_image']['scale0']['CytAssist_FFPE_Human_Breast_Cancer_full_image'].data.compute()
+        xenium_image = merged['morphology_mip']['scale0']['morphology_mip'].data.compute()
+        print('computing standard deviation and mean...', end='')
+        self.visium_mean = np.mean(visium_image.reshape(visium_image.shape[0], -1), axis=-1)
+        self.visium_std = np.std(visium_image.reshape(visium_image.shape[0], -1), axis=-1)
+        self.xenium_mean = np.mean(xenium_image)
+        self.xenium_std = np.std(xenium_image)
+        print('done')
+        return dataset0, dataset1
+
+    @staticmethod
+    def _crop_dataset(merged: SpatialData) -> SpatialData:
         # subsetting the data for debug/development purposes
         min_coordinate = [12790, 12194]
-        max_coordinate = [15100, 14221]
+        max_coordinate = [15100, 15221]
         merged = merged.query.bounding_box(
             min_coordinate=min_coordinate,
             max_coordinate=max_coordinate,
             axes=["y", "x"],
             target_coordinate_system="aligned",
         )
-    return merged, visium_sdata, xenium_sdata
+        if False:
+            from napari_spatialdata import Interactive
 
+            Interactive(merged)
+            os._exit(0)
+        return merged
 
-def _get_clonal_classes(adata: AnnData) -> list[str]:
-    categories = adata.obs["clone"].cat.categories.tolist()
-    return categories
-
-
-class ClonalTileDataset(torch.utils.data.Dataset):
-    def __init__(self, tile_dataset: ImageTilesDataset):
-        self.tile_dataset = tile_dataset
-        self.categories = _get_clonal_classes(self.tile_dataset.sdata.table)
-
-    def __len__(self):
-        return len(self.tile_dataset)
-
-    def __getitem__(self, idx):
-        tile, row = self.tile_dataset[idx]
-        clonal_information = row.obs["clone"].values[0]
-        clonal_information = self.categories.index(clonal_information)
-        clonal_one_hot = F.one_hot(
-            torch.tensor(clonal_information), num_classes=len(self.categories)
-        )
-        tile_numpy = tile.data.compute().astype(np.float32)
-        return tile_numpy, clonal_one_hot.float()
-
-
-def get_dataset() -> ImageTilesDataset:
-    merged, xenium_sdata, visium_sdata = load_data()
-
-    circles = merged["CytAssist_FFPE_Human_Breast_Cancer"]
-    t = get_transformation(circles, "aligned")
-
-    transformed_circles = transform(circles, t)
-    visium_circle_diameter = 2 * transformed_circles.radius.iloc[0]
-    dataset = ImageTilesDataset(
-        sdata=merged,
-        regions_to_images={"CytAssist_FFPE_Human_Breast_Cancer": "xenium"},
-        tile_dim_in_units=visium_circle_diameter,
-        tile_dim_in_pixels=32,
-        target_coordinate_system="aligned",
-    )
-    ##
-    # visualization (only if using the small dataset, otherwise the code will be too slow)
-    if SMALL_DATASET:
+    @staticmethod
+    def _napari_visualization(merged: SpatialData, dataset: ImageTilesDataset):
+        ##
+        # visualization (only if using the small dataset, otherwise the code will be too slow)
         tiles = []
         for i, tile in enumerate(tqdm(dataset)):
+            if i > 100:
+                break
             tiles.append(tile)
 
         tiles_sdata = SpatialData(
             images={
-                "full": visium_sdata.images[
-                    "CytAssist_FFPE_Human_Breast_Cancer_full_image"
-                ]
+                "full": merged.images["morphology_mip"]
+                # "full": merged.images["CytAssist_FFPE_Human_Breast_Cancer_full_image"]
             }
-            | {
-                f"tile_{region_name}_{region_index}": tile
-                for (tile, region_name, region_index) in tiles
-            }
+            | {f"tile_{j}": tile for j, (tile, _) in enumerate(tiles)}
         )
 
         Interactive([tiles_sdata, merged])
-    ##
 
-    clonal_tile_dataset = ClonalTileDataset(dataset)
-    return clonal_tile_dataset
+    def __len__(self):
+        return len(self.dataset0)
 
-
-##
+    def __getitem__(self, idx):
+        tile0, row = self.dataset0[idx]
+        tile1, _ = self.dataset1[idx]
+        expected_category = row.obs[self.CATEGORICAL_COLUMN].values[0]
+        expected_category = self.categories.index(expected_category)
+        clonal_one_hot = F.one_hot(
+            torch.tensor(expected_category), num_classes=len(self.categories)
+        )
+        tile0_numpy = tile0.data.compute()
+        tile0_numpy = (tile0_numpy - self.visium_mean[:, None, None]) / self.visium_std[:, None, None]
+        tile0_numpy = tile0_numpy.astype(np.float32)
+        tile1_numpy = tile1.data.compute()
+        tile1_numpy = (tile1_numpy - self.xenium_mean) / self.xenium_std
+        tile1_numpy = tile1_numpy.astype(np.float32)
+        stacked_tile = np.vstack([tile0_numpy, tile1_numpy])
+        if self.transform is not None:
+            stacked_tile = self.transform(stacked_tile)
+        return stacked_tile, clonal_one_hot.float()
 
 
 class TilesDataModule(LightningDataModule):
@@ -166,19 +203,24 @@ class TilesDataModule(LightningDataModule):
         batch_size: int,
         num_workers: int,
         train_transform: torchvision.transforms.Compose,
-        test_transform: torchvision.transforms.Compose,
     ):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.train_transform = train_transform
-        self.test_transform = test_transform
+        self.dataset = None
         self.train = None
         self.val = None
         self.test = None
+        self.num_classes = None
+        self.in_channels = None
+        self.dataloader_kwargs = {
+            "pin_memory": True if torch.cuda.is_available() else False,
+            "persistent_workers": True if torch.cuda.is_available() else False,
+        }
 
     def setup(self, stage=None):
-        self.dataset = get_dataset()
+        self.dataset = TileDataset()
         n_train = int(len(self.dataset) * 0.7)
         n_val = int(len(self.dataset) * 0.2)
         n_test = len(self.dataset) - n_train - n_val
@@ -187,9 +229,10 @@ class TilesDataModule(LightningDataModule):
             [n_train, n_val, n_test],
             generator=torch.Generator().manual_seed(42),
         )
-        self.train.dataset.tile_dataset.transform = self.train_transform
-        self.val.dataset.tile_dataset.transform = self.test_transform
-        self.test.dataset.tile_dataset.transform = self.test_transform
+        self.train.dataset.transform = self.train_transform
+        self.train.dataset.transform = self.train_transform
+        self.num_classes = len(self.dataset.categories)
+        self.in_channels = self.dataset[0][0].shape[0]
 
     def train_dataloader(self):
         return DataLoader(
@@ -197,6 +240,7 @@ class TilesDataModule(LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=True,
+            **self.dataloader_kwargs,
         )
 
     def val_dataloader(self):
@@ -205,6 +249,7 @@ class TilesDataModule(LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=False,
+            **self.dataloader_kwargs,
         )
 
     def test_dataloader(self):
@@ -213,6 +258,7 @@ class TilesDataModule(LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=False,
+            **self.dataloader_kwargs,
         )
 
     def predict_dataloader(self):
@@ -221,6 +267,7 @@ class TilesDataModule(LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=False,
+            **self.dataloader_kwargs,
         )
 
 
