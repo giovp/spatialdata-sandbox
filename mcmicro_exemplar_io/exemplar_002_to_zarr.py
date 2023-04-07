@@ -4,11 +4,13 @@ from spatialdata_io import mcmicro
 import shutil
 
 ##
-f = 'data/exemplar-001'
+f = 'data/exemplar-002'
 assert os.path.isdir(f)
-sdata = mcmicro(f, dataset_id='exemplar-001')
+sdata = mcmicro(f)
+print(sdata)
+sdata.table.obs.index.name = 'index'
 
-outfile = 'exemplar_001.zarr'
+outfile = 'exemplar_002.zarr'
 if os.path.exists(outfile):
     shutil.rmtree(outfile)
 sdata.write(outfile)
