@@ -150,3 +150,11 @@ outs/
 *.zip
 generated_data/
 *.nextflow*
+	
+# deep learning data
+lightning_logs/
+logs/
+notebooks/logs/
+
+# data symlink
+notebooks/spatialdata-sandbox
