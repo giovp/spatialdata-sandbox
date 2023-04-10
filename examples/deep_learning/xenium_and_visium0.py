@@ -8,7 +8,7 @@ from pytorch_lightning.loggers import CSVLogger
 import torchvision
 import torch
 
-from examples.xenium_and_visium_data import TilesDataModule, DenseNetModel
+from examples.deep_learning.xenium_and_visium_data import TilesDataModule, DenseNetModel
 import numpy as np
 
 
@@ -30,7 +30,7 @@ def random_horizontal_flip(image: np.ndarray, p: float = 0.5) -> np.ndarray:
 if __name__ == "__main__":
     pl.seed_everything(7)
 
-    PATH_DATASETS = os.environ.get("PATH_DATASETS", ".")
+    PATH_DATASETS = os.environ.get("PATH_DATASETS", "..")
     BATCH_SIZE = 4096 if torch.cuda.is_available() else 2
     NUM_WORKERS = 10 if torch.cuda.is_available() else 6
     print(f"Using {BATCH_SIZE} batch size.")

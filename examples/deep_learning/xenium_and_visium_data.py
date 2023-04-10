@@ -39,7 +39,7 @@ SMALL_DATASET = True
 def load_raw_data() -> tuple[SpatialData, SpatialData]:
     # loading the Xenium and Visium SpatialData objects
     print("current working directory:", os.getcwd())
-    SPATIALDATA_SANDBOX_PATH = "."
+    SPATIALDATA_SANDBOX_PATH = ".."
     GENERATED_DATA_PATH = os.path.join(
         SPATIALDATA_SANDBOX_PATH, "generated_data/xenium_visium_integration"
     )

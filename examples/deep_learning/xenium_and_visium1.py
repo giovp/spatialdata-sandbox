@@ -1,14 +1,14 @@
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
 import torchvision
-from examples.xenium_and_visium0 import random_horizontal_flip
+from examples.deep_learning.xenium_and_visium0 import random_horizontal_flip
 import torch
 import os
 import re
 import numpy as np
 import pandas as pd
 
-from examples.xenium_and_visium_data import (
+from examples.deep_learning.xenium_and_visium_data import (
     TilesDataModule,
     DenseNetModel,
 )
