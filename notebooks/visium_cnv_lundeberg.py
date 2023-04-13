@@ -11,11 +11,8 @@ import pandas as pd
 
 PIL.Image.MAX_IMAGE_PIXELS = None
 from dask_image.imread import imread
-from spatialdata._core.models import Image2DModel, ShapesModel, TableModel
-from spatialdata._core.core_utils import _get_transformations, _set_transformations, SpatialElement
-from spatialdata._core._spatialdata_ops import get_transformation, set_transformation
-# from spatialdata._core._transform_elements import align_elements_using_landmarks
-from spatialdata._core.transformations import Identity, Affine, Sequence, Scale, BaseTransformation
+from spatialdata.models import Image2DModel, ShapesModel, TableModel
+from spatialdata.transformations import Identity, Scale, get_transformation, set_transformation, align_elements_using_landmarks
 from spatialdata import SpatialData
 from napari_spatialdata import Interactive
 from spatial_image import SpatialImage
@@ -24,9 +21,13 @@ from spatialdata_io.readers._utils._read_10x_h5 import _read_10x_h5
 
 
 ##
-path = os.path.join("data/lundeberg/", "svw96g68dv-1.zip")
-OUT_FOLDER = os.path.join("data/lundeberg/", "converted")
+LUNDEBERG_DATA_ROOT = "data/lundeberg"
+path = os.path.join(LUNDEBERG_DATA_ROOT, "svw96g68dv-1.zip")
+assert os.path.isfile(path)
+
+OUT_FOLDER = os.path.join(LUNDEBERG_DATA_ROOT, "converted")
 os.makedirs(OUT_FOLDER, exist_ok=True)
+
 SDATA_SMALL_IMAGES = os.path.join(OUT_FOLDER, "small_images.zarr")
 SDATA_LARGE_IMAGES_PATIENT1_VISIUM = os.path.join(OUT_FOLDER, "large_images_patient1_visium.zarr")
 SDATA_LARGE_IMAGES_PATIENT2_VISIUM = os.path.join(OUT_FOLDER, "large_images_patient2_visium.zarr")
@@ -34,6 +35,7 @@ SDATA_LARGE_IMAGES_PATIENT1_1K = os.path.join(OUT_FOLDER, "large_images_patient1
 SDATA_EXPRESSION_PATIENT1_VISIUM_PATH = os.path.join(OUT_FOLDER, "expression_patient1_visium.zarr")
 SDATA_EXPRESSION_PATIENT2_VISIUM_PATH = os.path.join(OUT_FOLDER, "expression_patient2_visium.zarr")
 SDATA_EXPRESSION_PATIENT1_1K_PATH = os.path.join(OUT_FOLDER, "expression_patient1_1k.zarr")
+
 ##
 # unzip the data
 unzipped_path = path.replace(".zip", "")
@@ -55,6 +57,7 @@ if UNZIP:
             zip_ref.extractall(os.path.dirname(unzipped_path))
         print("data unzipped")
     assert os.path.isdir(unzipped_path)
+
 ##
 SAVE_IMAGES = False
 if SAVE_IMAGES:
@@ -88,10 +91,10 @@ if SAVE_IMAGES:
 
     def _parse_image(path: str, sample_name: str) -> SpatialImage:
         image = Image2DModel.parse(imread(path).squeeze(), dims=("y", "x", "c"), multiscale_factors=[2, 2, 2, 2])
-        d = _get_transformations(image)
+        d = get_transformation(image, get_all=True)
         d[sample_name] = d["global"]
         del d["global"]
-        _set_transformations(image, d)
+        set_transformation(image, d, set_all=True)
         return image
 
     for name, path in paths_patient1_visium.items():
@@ -102,7 +105,7 @@ if SAVE_IMAGES:
         images[name] = _parse_image(path, sample_name="patient1_1k")
 
     im = images["sample_overview_patient1_visium"]
-    d = _get_transformations(im)
+    d = get_transformation(im, get_all=True)
     d["patient1_1k"] = Identity()
 
     sdata_small_images = SpatialData(images=images)
@@ -606,7 +609,7 @@ if ALIGN_MAPPING_BETWEEN_1K_IMAGE_AND_EXPRESSION:
     for name, shapes in sdata_patient1_1k.shapes.items():
         if name.endswith("_patient1_1k"):
             image = sdata_patient1_1k.images[name]
-            moving_transformation, _ = map_elements(
+            moving_transformation, _ = align_elements_using_landmarks(
                 references_coords=sdata_mapping_between_1k_image_and_expression.shapes["reference"],
                 moving_coords=sdata_mapping_between_1k_image_and_expression.shapes["moving"],
                 reference_element=image,
