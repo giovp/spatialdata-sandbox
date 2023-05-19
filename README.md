@@ -15,5 +15,3 @@ The respository contains scripts to convert common formats into the `SpatialData
   * Images
   * Regions
 * Have a readme.md with prose
-
-<img src='https://github.com/giovp/spatialdata-sandbox/raw/main/graphics/overview.png'/>
