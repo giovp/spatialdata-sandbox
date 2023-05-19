@@ -1,6 +1,9 @@
+![SpatialData banner](https://github.com/scverse/spatialdata/blob/main/docs/_static/img/spatialdata_horizontal.png?raw=true)
+
 # spatialdata-sandbox
 
-Example datasets for SpatialData development.
+The respository contains scripts to convert common formats into the `SpatialData` storage format. To learn more about the storage format, please see the [SpatialData design document](https://spatialdata.scverse.org/en/latest/design_doc.html). You can download the datasets [here](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/datasets/README.html).
+
 ## How to add datasets
 
 * Directory per dataset, named after the technology
