@@ -14,7 +14,7 @@ if not str(path).endswith("visium_io"):
 path_read = path / "data"
 path_write = path / "data.zarr"
 ##
-sdata = visium(path_read)
+sdata = visium(path_read, fullres_image_file="Visium_Mouse_Olfactory_Bulb_image.tif")
 ##
 if path_write.exists():
     shutil.rmtree(path_write)

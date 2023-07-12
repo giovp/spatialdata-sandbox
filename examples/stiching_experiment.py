@@ -59,7 +59,7 @@ sdata["im3"] = image_transformed3
 import pandas as pd
 from geopandas import GeoDataFrame
 from shapely import Polygon
-from spatialdata._core.query.spatial_query import get_bounding_box_corners
+from spatialdata._core.query._utils import get_bounding_box_corners
 
 min_coordinates_data_bb = np.array([0, 0])
 max_coordinates_data_bb = np.array([image_transformed.shape[1], image_transformed.shape[0]])
