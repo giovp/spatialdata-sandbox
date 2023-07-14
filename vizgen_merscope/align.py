@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-path = Path(__file__).parents[1] / "data" / "vizgen_sample"
+path = Path(__file__).parents[0] / "data" / "vizgen_sample"
 images_dir = path / "images"
 
 microns_to_pixels = np.genfromtxt(images_dir / "micron_to_mosaic_pixel_transform.csv")
@@ -28,6 +28,7 @@ coords = np.concatenate(
 	[transcripts[["global_x", "global_y"]].values, np.ones((len(transcripts), 1))],
 	axis=1,
 )
+
 pixels_coords = (coords @ microns_to_pixels.T)[:, :2]
 pixels_coords = pixels_coords[
 	np.random.choice(len(pixels_coords), 10_000, replace=False)
@@ -43,9 +44,10 @@ plt.scatter(pixels_coords[:, 0], pixels_coords[:, 1], s=1, c="k")
 for geom in geo_df[geo_df.ZIndex == 0].Geometry:
 	x, y = geom.geoms[0].exterior.coords.xy
 	x, y = (
-		np.stack([x, y], axis=1) @ microns_to_pixels[:2, :2] + microns_to_pixels[:2, 2]
+		np.stack([x, y], axis=1) @ microns_to_pixels[:2, :2].T + microns_to_pixels[:2, 2]
 	).T
 	plt.plot(x, y, "w", linewidth=0.5)
 
+plt.show()
 plt.savefig("cropped_images_aligned.png")
 
