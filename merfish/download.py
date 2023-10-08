@@ -40,7 +40,6 @@ processed.mkdir(parents=True, exist_ok=True)
 
 ##
 def my_download(url):
-    return
     # aria2c asks for relative paths
     download(
         url,
