@@ -18,6 +18,7 @@ import datashader
 import imageio
 from pathlib import Path
 import sys
+from PIL import Image
 sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
 
 from utils import download
@@ -235,6 +236,7 @@ scale_factors = np.array([scale_factor_x, scale_factor_y])
 # wrong
 # scale_factor = (bb.x1 - bb.x0) / raster_w
 ##
+raster_crop = (raster_crop * 255).astype(np.uint8)
 imageio.imwrite(processed / "image.png", raster_crop)
 # np.save(os.path.join(output_dir, "image"), raster_crop)
 
