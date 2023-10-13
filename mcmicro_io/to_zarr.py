@@ -13,7 +13,7 @@ path_write = path / "data.zarr"
 print("parsing the data... ", end="")
 sdata = mcmicro(
     path=path_read,
-    dataset_id="exemplar-001"
+#    dataset_id="exemplar-001"
 )
 print("done")
 ##
