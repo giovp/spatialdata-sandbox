@@ -1,6 +1,8 @@
 import concurrent.futures
 import requests
 from pathlib import Path
+import ssam
+import pandas as pd
 
 SAVE = Path().resolve() / "data" 
 SAVE.mkdir(parents=True, exist_ok=True)
@@ -22,8 +24,15 @@ def download_file(url, output_dir):
                     file.write(chunk)
 
         print(f"Downloaded {url} to {file_name}")
+
     except Exception as e:
         print(f"Error downloading {url}: {e}")
+    
+
+def download_ssam(spot):
+    spots = pd.read_csv(spot, usecols=["xc", "yc", "gene", "cell"]).rename(columns={"xc": "x", "yc": "y"}).set_index('gene')
+    ds = ssam.SSAMDataset("data/processed/ssam-osmfish")
+    analysis = ssam.SSAMAnalysis(ds, ncores=40, verbose=True)
 
 if __name__ == "__main__":
     urls = [
@@ -37,7 +46,3 @@ if __name__ == "__main__":
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         for url in urls:
             executor.submit(download_file, url, output_directory)
-
-
-
-
