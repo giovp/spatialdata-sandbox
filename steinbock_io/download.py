@@ -4,13 +4,13 @@ from tqdm import tqdm
 import subprocess
 
 urls = [
-    "https://zenodo.org/record/7412972/files/cells.h5ad",
-    "https://zenodo.org/record/7412972/files/masks_ilastik.zip",
-    "https://zenodo.org/record/7412972/files/masks_deepcell.zip",
-    "https://zenodo.org/record/7412972/files/img.zip",
-    "https://zenodo.org/record/7412972/files/images.csv",
-    "https://zenodo.org/record/7412972/files/ome.zip",
-    "https://zenodo.org/record/7412972/files/panel.csv",
+    "https://zenodo.org/records/7412972/files/cells.h5ad",
+    "https://zenodo.org/records/7412972/files/masks_ilastik.zip",
+    "https://zenodo.org/records/7412972/files/masks_deepcell.zip",
+    "https://zenodo.org/records/7412972/files/img.zip",
+    "https://zenodo.org/records/7412972/files/images.csv",
+    "https://zenodo.org/records/7412972/files/ome.zip",
+    "https://zenodo.org/records/7412972/files/panel.csv",
 ]
 
 os.makedirs("data", exist_ok=True)
