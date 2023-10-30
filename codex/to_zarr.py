@@ -1,11 +1,8 @@
 ##
-import pyarrow as pa
 import os
 import anndata as ad
 os.environ['USE_PYGEOS'] = '0'
-import json
 import numpy as np
-import scanpy as sc
 import shutil
 from pathlib import Path
 import spatialdata as sd
@@ -30,8 +27,10 @@ markerlist = pd.read_csv(raw / 'markerlist.csv', index_col=0)
 expression = pd.read_csv(raw / 'expression.csv', index_col=0)
 
 # construct the spatial data object (ln stands for lymph node)
-images = { 'ln': sd.Image2DModel.parse(image) }
-labels = { 'ln': sd.Labels2DModel.parse(segmentation,  dims=("y", "x")) }
+images = { 'ln_image': sd.models.Image2DModel.parse(image) }
+labels = { 'ln_labels': sd.models.Labels2DModel.parse(segmentation,  dims=("y", "x")) }
+
+annotation['region'] = 'ln_labels'
 
 # creates the anndata object for the spatial data table
 adata = ad.AnnData(
@@ -42,15 +41,18 @@ adata = ad.AnnData(
 )
 
 adata.obs['library_id'] = f'/labels/ln'
-table = sd.TableModel.parse(adata, region='labels/ln', instance_key='cell_id')
+table = sd.models.TableModel.parse(adata, region='ln_labels', region_key='region', instance_key='cell_id')
 
 sdata = sd.SpatialData(table=table, labels=labels, images=images)
-sdata.images['ln'].coords['c'] = np.array(markerlist['marker'].tolist())
+sdata.images['ln_image'].coords['c'] = np.array(markerlist['marker'].tolist())
 
 
-path_write = processed / "data.zarr"
+path_write = Path("data.zarr")
 
 if path_write.exists():
     shutil.rmtree(path_write)
 
 sdata.write(path_write)
+
+print(sdata)
+print('done')
