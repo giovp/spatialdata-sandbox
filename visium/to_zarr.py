@@ -41,13 +41,13 @@ for sdata in [sdataST8059048, sdataST8059050]:
             if cs_name in sd.transformations.get_transformation(el, get_all=True):
                 sd.transformations.remove_transformation(el, cs_name)
 
-# we want to concatenate the two datasets, but they have the same coordinate system names; therefore # let's prepend
-# the dataset_id to the coordinate system names to avoid confusion after concatenation
+# we want to concatenate the two datasets, but they have the same coordinate system names; therefore let's rename
+# the each coordinate system to match the dataset id 
 sdataST8059048.rename_coordinate_systems(
-    {"downscaled_hires": "ST8059048_downscaled_hires"}
+    {"downscaled_hires": "ST8059048"}
 )
 sdataST8059050.rename_coordinate_systems(
-    {"downscaled_hires": "ST8059050_downscaled_hires"}
+    {"downscaled_hires": "ST8059050"}
 )
 sdata = sd.concatenate([sdataST8059048, sdataST8059050])
 print(sdata)
