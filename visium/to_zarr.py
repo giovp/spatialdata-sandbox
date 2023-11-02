@@ -20,7 +20,36 @@ path_read = path / "data"
 path_write = path / "data.zarr"
 
 ##
-sdata = visium(path_read / 'mouse_brain_visium_wo_cloupe_data/rawdata/ST8059048', dataset_id='ST8059048')
+sdataST8059048 = visium(
+    path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059048",
+    dataset_id="ST8059048",
+)
+sdataST8059050 = visium(
+    path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059050",
+    dataset_id="ST8059050",
+)
+# Each SpatialData object has 3 coordinate systems: 'global', 'downscaled_hires' and 'downscaled_lowres'.
+# Visium datasets generally are available with images (lowres and hires) and sometimes also a "full resolution" image,
+# which has an even greater resolution than the hires image. This dataset doesn't contain a full resolution image, so
+# let's drop the coordinate system "global", which would otherwise contain it. Let's also drop the coordinate system
+# "downscaled_lowres", which is not needed.
+# NOTE: in future version of the Visium reader only one coordinate system will be used, containing all the images. We
+# are keeping the three coordinate systems for legacy reasons for the time being.
+for sdata in [sdataST8059048, sdataST8059050]:
+    for el in sdata._gen_elements_values():
+        for cs_name in ["global", "downscaled_lowres"]:
+            if cs_name in sd.transformations.get_transformation(el, get_all=True):
+                sd.transformations.remove_transformation(el, cs_name)
+
+# we want to concatenate the two datasets, but they have the same coordinate system names; therefore # let's prepend
+# the dataset_id to the coordinate system names to avoid confusion after concatenation
+sdataST8059048.rename_coordinate_systems(
+    {"downscaled_hires": "ST8059048_downscaled_hires"}
+)
+sdataST8059050.rename_coordinate_systems(
+    {"downscaled_hires": "ST8059050_downscaled_hires"}
+)
+sdata = sd.concatenate([sdataST8059048, sdataST8059050])
 print(sdata)
 
 #
