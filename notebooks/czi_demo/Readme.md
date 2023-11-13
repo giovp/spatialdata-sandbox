@@ -8,6 +8,6 @@
 -  On-Disk Data Representation [notebook](https://github.com/giovp/spatialdata-sandbox/blob/main/notebooks/czi_demo/on_disk_representation.ipynb)
 -  Multiple Formats Support via `spatialdata-io`
 
-## Documentation notebooks:
+## Other resources:
 
--  [Notebooks](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks.html)
+-  [Documentation notebooks](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks.html)
