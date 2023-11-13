@@ -2,8 +2,8 @@
 
 ## Notebooks:
 
--  Xenium + Visium Example
--  Deep Learning Example: [notebook](https://github.com/scverse/spatialdata-notebooks/blob/main/notebooks/examples/densenet.ipynb) [notebook from the docs](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks/examples/densenet.html)
+-  Xenium + Visium Example [notebook](https://github.com/giovp/spatialdata-sandbox/blob/main/notebooks/czi_demo/xenium_visium.ipynb)
+-  Deep Learning Example [notebook](https://github.com/scverse/spatialdata-notebooks/blob/main/notebooks/examples/densenet.ipynb) [notebook from the docs](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks/examples/densenet.html)
 -  R Interoperability
 -  On-Disk Data Representation [notebook](https://github.com/giovp/spatialdata-sandbox/blob/main/notebooks/czi_demo/on_disk_representation.ipynb)
 -  Multiple Formats Support via `spatialdata-io`
