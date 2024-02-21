@@ -23,6 +23,7 @@ path_write = path / "data.zarr"
 sdataST8059048 = visium(
     path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059048",
     dataset_id="ST8059048",
+    filtered_counts_file=False
 )
 sdataST8059050 = visium(
     path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059050",
@@ -36,7 +37,7 @@ sdataST8059050 = visium(
 # NOTE: in future version of the Visium reader only one coordinate system will be used, containing all the images. We
 # are keeping the three coordinate systems for legacy reasons for the time being.
 for sdata in [sdataST8059048, sdataST8059050]:
-    for el in sdata._gen_elements_values():
+    for el in sdata._gen_spatial_element_values():
         for cs_name in ["global", "downscaled_lowres"]:
             if cs_name in sd.transformations.get_transformation(el, get_all=True):
                 sd.transformations.remove_transformation(el, cs_name)
@@ -49,7 +50,7 @@ sdataST8059048.rename_coordinate_systems(
 sdataST8059050.rename_coordinate_systems(
     {"downscaled_hires": "ST8059050"}
 )
-sdata = sd.concatenate([sdataST8059048, sdataST8059050])
+sdata = sd.concatenate([sdataST8059048, sdataST8059050], concatenate_tables=True)
 print(sdata)
 
 #

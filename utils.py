@@ -2,6 +2,10 @@ import os
 import subprocess
 import urllib.request
 import zipfile
+from typing import Callable, Any
+from spatialdata import SpatialData
+from pathlib import Path
+import shutil
 
 from tqdm import tqdm
 
