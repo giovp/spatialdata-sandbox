@@ -7,7 +7,6 @@ import subprocess
 import pytest
 
 
-# TODO: this code is untested, test that it works
 class TestToZarrScripts:
     def execute_script(self, script):
         result = subprocess.run(
