@@ -11,7 +11,7 @@ path = Path().resolve()
 # luca's workaround for pycharm
 if not str(path).endswith("xenium_1.0.2_io"):
     path /= "xenium_1.0.2_io"
-    assert path.exists()
+    assert path.exists(), path
 
 path_read = path / "data"
 path_write = path / "data.zarr"
