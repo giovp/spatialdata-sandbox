@@ -23,7 +23,6 @@ path_write = path / "data.zarr"
 sdataST8059048 = visium(
     path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059048",
     dataset_id="ST8059048",
-    filtered_counts_file=False
 )
 sdataST8059050 = visium(
     path_read / "mouse_brain_visium_wo_cloupe_data/rawdata/ST8059050",
