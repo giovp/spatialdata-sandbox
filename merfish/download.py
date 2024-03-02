@@ -118,6 +118,7 @@ if PLOT:
 df = pd.read_csv(raw / "fixed_1001844875.csv")
 df.drop(columns=[df.columns[0], df.columns[1]], inplace=True)
 df["radius"] = df["area"].apply(lambda x: math.sqrt(x / math.pi))
+df = df.loc[df["radius"] != 0]
 genes = df.columns.tolist()
 genes = genes[: genes.index("area")]
 xy = df[["x_um", "y_um"]].to_numpy()
