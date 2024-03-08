@@ -40,7 +40,7 @@ def test_visium():
 
 
 def test_visium_io():
-    os.chdir(path / "visium_io")
+    os.chdir(path / "visium_2.0.0_io")
     import visium_io.to_zarr
 
 
