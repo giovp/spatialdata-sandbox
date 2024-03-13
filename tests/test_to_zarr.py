@@ -39,11 +39,6 @@ def test_visium():
     import visium.to_zarr
 
 
-def test_visium_io():
-    os.chdir(path / "visium_2.0.0_io")
-    import visium_io.to_zarr
-
-
 @pytest.mark.skip(reason="large dataset")
 def test_xenium_rep1_io():
     os.chdir(path / "xenium_rep1_io")

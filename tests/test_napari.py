@@ -29,7 +29,7 @@ def test_visium():
 
 
 def test_visium_io():
-    sdata = SpatialData.read("visium_2.0.0_io/data.zarr")
+    sdata = SpatialData.read("visium_2.0.0_1_io/data.zarr")
     Interactive(sdata, headless=True)
 
 
