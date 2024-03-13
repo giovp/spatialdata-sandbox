@@ -8,13 +8,13 @@ import shutil
 ##
 path = Path().resolve()
 # luca's workaround for pycharm
-if not str(path).endswith("visium_2.1.0_io"):
-    path /= "visium_2.1.0_io"
+if not str(path).endswith("visium_2.1.0_1_io"):
+    path /= "visium_2.1.0_1_io"
     assert path.exists()
 path_read = path / "data"
 path_write = path / "data.zarr"
 ##
-sdata = visium(path_read, fullres_image_file="CytAssist_FFPE_Protein_Expression_Human_Tonsil_tissue_image.tif")
+sdata = visium(path_read, fullres_image_file="CytAssist_FFPE_Human_Colon_Post_Xenium_Rep1_tissue_image.btf")
 ##
 if path_write.exists():
     shutil.rmtree(path_write)
@@ -26,5 +26,5 @@ sdata = sd.SpatialData.read(path_write)
 print(sdata)
 print("read")
 
-# from napari_spatialdata import Interactive
-# Interactive(sdata)
+from napari_spatialdata import Interactive
+Interactive(sdata)

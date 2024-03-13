@@ -33,7 +33,8 @@ class TestToZarrScripts:
             # "visium_1.3.1_io/to_zarr.py",  # not supported due to the format appearing very different on disk
             "visium_2.0.0_io/to_zarr.py",
             "visium_2.0.1_io/to_zarr.py",
-            "visium_2.1.0_io/to_zarr.py",
+            "visium_2.1.0_1_io/to_zarr.py",
+            "visium_2.1.0_2_io/to_zarr.py",
         ],
     )
     def test_xenium_to_zarr_scripts(self, script):
