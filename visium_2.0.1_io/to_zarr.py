@@ -1,6 +1,7 @@
 ##
 from spatialdata_io import visium
 import spatialdata as sd
+
 ##
 from pathlib import Path
 import shutil
@@ -14,7 +15,10 @@ if not str(path).endswith("visium_2.0.1_io"):
 path_read = path / "data"
 path_write = path / "data.zarr"
 ##
-sdata = visium(path_read, fullres_image_file="CytAssist_Fresh_Frozen_Human_Breast_Cancer_tissue_image.tif")
+sdata = visium(
+    path_read,
+    fullres_image_file="CytAssist_Fresh_Frozen_Human_Breast_Cancer_tissue_image.tif",
+)
 ##
 if path_write.exists():
     shutil.rmtree(path_write)
@@ -27,4 +31,5 @@ print(sdata)
 print("read")
 
 # from napari_spatialdata import Interactive
+#
 # Interactive(sdata)

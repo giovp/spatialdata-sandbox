@@ -26,5 +26,5 @@ sdata = sd.SpatialData.read(path_write)
 print(sdata)
 print("read")
 
-from napari_spatialdata import Interactive
-Interactive(sdata)
+# from napari_spatialdata import Interactive
+# Interactive(sdata)
