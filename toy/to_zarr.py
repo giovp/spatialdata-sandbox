@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 from pathlib import Path
 import spatialdata as sd
-from spatialdata.transformations.transformations import Scale, Translation, Sequence
+from spatialdata.transformations import set_transformation, Scale, Translation, Sequence
 
 PLOT = False
 
@@ -16,6 +16,7 @@ if not str(path).endswith("toy"):
 
 path_write = path / "data.zarr"
 
+
 ##
 # image and transformation
 def draw_circle_on_image(im: np.ndarray, x: int, y: int, r: int):
@@ -25,9 +26,12 @@ def draw_circle_on_image(im: np.ndarray, x: int, y: int, r: int):
 
 
 x = np.zeros((200, 100), dtype=float)
-x = draw_circle_on_image(im=x, x=30, y=50, r=5)
-x = draw_circle_on_image(im=x, x=50, y=20, r=10)
-x = draw_circle_on_image(im=x, x=70, y=150, r=15)
+a_r = 5
+b_r = 10
+c_r = 15
+x = draw_circle_on_image(im=x, x=30, y=50, r=a_r)
+x = draw_circle_on_image(im=x, x=50, y=20, r=b_r)
+x = draw_circle_on_image(im=x, x=70, y=150, r=c_r)
 x[:2, :] = 1.0
 x[-2:, :] = 1.0
 x[:, :2] = 1.0
@@ -43,12 +47,16 @@ translation_y = 50
 scale_factor = 3
 transformation = Sequence(
     [
-        Scale(scale=np.array([scale_factor, scale_factor]), axes=('y', 'x')),
-        Translation(translation=np.array([translation_y, translation_x]), axes=('y', 'x')),
+        Scale(scale=np.array([scale_factor, scale_factor]), axes=("y", "x")),
+        Translation(
+            translation=np.array([translation_y, translation_x]), axes=("y", "x")
+        ),
     ]
 )
 x = np.expand_dims(x, axis=0)
-image = sd.models.Image2DModel.parse(x, dims=('c', "y", "x"), transformations={'global': transformation})
+image = sd.models.Image2DModel.parse(
+    x, dims=("c", "y", "x"), transformations={"global": transformation}
+)
 ##
 # circles
 if PLOT:
@@ -68,7 +76,20 @@ points = np.array(
         (c_x, c_y),
     ]
 )
-sizes = [100, 400, 900, 50, 50, 50]
+
+
+def area(r, scale_factor=1):
+    return np.pi * r * r * scale_factor * scale_factor
+
+
+sizes = [
+    100,
+    400,
+    900,
+    area(a_r, scale_factor),
+    area(b_r, scale_factor),
+    area(c_r, scale_factor),
+]
 
 
 def f(t, begin_end):
@@ -142,6 +163,10 @@ a_circles = sd.models.ShapesModel.parse(
 a_points = sd.models.PointsModel.parse(xy)
 
 ##
+scale = Scale(scale=[3, 3], axes=("x", "y"))
+set_transformation(image, Sequence([transformation, scale]), to_coordinate_system="scaled")
+set_transformation(a_circles, scale, to_coordinate_system="scaled")
+
 sdata = sd.SpatialData(
     images={"image": image},
     points={"points": a_points},
