@@ -26,6 +26,7 @@ class TestToZarrScripts:
     @pytest.mark.parametrize(
         "script",
         [
+            "xenium_rep1_io/to_zarr.py",  # 1.0.1
             "xenium_1.0.2_io/to_zarr.py",
             "xenium_1.3.0_io/to_zarr.py",
             "xenium_1.4.0_io/to_zarr.py",
