@@ -40,7 +40,6 @@ adata = ad.AnnData(
     dtype=expression.values.dtype
 )
 
-adata.obs['library_id'] = f'/labels/ln'
 table = sd.models.TableModel.parse(adata, region='ln_labels', region_key='region', instance_key='cell_id')
 
 sdata = sd.SpatialData(table=table, labels=labels, images=images)
