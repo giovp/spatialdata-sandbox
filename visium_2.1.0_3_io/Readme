@@ -1,0 +1,6 @@
+from https://github.com/nf-core/test-datasets/tree/spatialtranscriptomics/testdata/human-brain-cancer-11-mm-capture-area-ffpe-2-standard_v2_ffpe_cytassist
+Spatial Gene Expression Dataset by Space Ranger 2.1.0
+
+1. download manually from github: https://github.com/nf-core/test-datasets/raw/spatialtranscriptomics/testdata/human-brain-cancer-11-mm-capture-area-ffpe-2-standard_v2_ffpe_cytassist/outs.tar.gz
+2. place the data in ./data/outs.tar.gz
+3. untar the data with tar -xzf data/outs.tar.gz -C data

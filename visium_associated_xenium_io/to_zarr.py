@@ -19,7 +19,11 @@ def main():
     path_write = path / "data.zarr"
     ##
     print("reading the data... ", end="")
-    sdata_visium = visium(str(path_read), fullres_image_file=path_read / "CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif")
+    sdata_visium = visium(
+        str(path_read),
+        fullres_image_file=path_read
+        / "CytAssist_FFPE_Human_Breast_Cancer_tissue_image.tif",
+    )
     print("done")
 
     print("writing the data... ", end="")
