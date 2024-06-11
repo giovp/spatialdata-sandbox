@@ -1,7 +1,6 @@
 ##
 import os
 
-os.environ["USE_PYGEOS"] = "0"
 import json
 import numpy as np
 import scanpy as sc

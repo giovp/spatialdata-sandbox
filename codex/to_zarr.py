@@ -1,7 +1,6 @@
 ##
 import os
 import anndata as ad
-os.environ['USE_PYGEOS'] = '0'
 import numpy as np
 import shutil
 from pathlib import Path
@@ -34,7 +33,7 @@ annotation['region'] = 'ln_labels'
 
 # creates the anndata object for the spatial data table
 adata = ad.AnnData(
-    X=expression.values, 
+    X=expression.values,
     obs=annotation,
     var=pd.DataFrame(expression.columns, columns=['marker']).set_index('marker'),
     dtype=expression.values.dtype
