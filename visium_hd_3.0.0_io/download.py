@@ -40,5 +40,6 @@ for file in files:
     subprocess.run(f"rm data/{file}", shell=True, check=True)
 
 for dir in list(Path("data/binned_outputs").glob("*")):
-    shutil.move(dir,"data")
+    if not(Path("data") / dir.name).exists():
+        shutil.move(dir,"data")
     subprocess.run(f"rmdir data/binned_outputs", shell=True, check=True)
