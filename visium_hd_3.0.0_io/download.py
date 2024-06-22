@@ -3,12 +3,13 @@
 import os
 import subprocess
 from pathlib import Path
+import shutil
 
 import sys
 
 sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
 
-from utils import download, unzip
+from utils import download
 
 ##
 
@@ -20,9 +21,7 @@ urls = [
     "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_cloupe_008um.cloupe",
     "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_feature_slice.h5",
     "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_spatial.tar.gz",
-    "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_square_002um_binned_outputs.tar.gz",
-    "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_square_008um_binned_outputs.tar.gz",
-    "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_square_016um_binned_outputs.tar.gz",
+    "https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Mouse_Small_Intestine/Visium_HD_Mouse_Small_Intestine_binned_outputs.tar.gz"
 ]
 
 ##
@@ -34,10 +33,12 @@ for url in urls:
 
 files = [
     "Visium_HD_Mouse_Small_Intestine_spatial.tar.gz",
-    "Visium_HD_Mouse_Small_Intestine_square_002um_binned_outputs.tar.gz",
-    "Visium_HD_Mouse_Small_Intestine_square_008um_binned_outputs.tar.gz",
-    "Visium_HD_Mouse_Small_Intestine_square_016um_binned_outputs.tar.gz",
+    "Visium_HD_Mouse_Small_Intestine_binned_outputs.tar.gz",
 ]
 for file in files:
     subprocess.run(f"tar -xzf data/{file} -C data", shell=True, check=True)
     subprocess.run(f"rm data/{file}", shell=True, check=True)
+
+for dir in list(Path("data/binned_outputs").glob("*")):
+    shutil.move(dir,"data")
+    subprocess.run(f"rmdir data/binned_outputs", shell=True, check=True)
