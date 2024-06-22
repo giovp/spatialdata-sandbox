@@ -42,4 +42,4 @@ for file in files:
 for dir in list(Path("data/binned_outputs").glob("*")):
     if not(Path("data") / dir.name).exists():
         shutil.move(dir,"data")
-    subprocess.run(f"rm -r data/binned_outputs", shell=True, check=True)
+subprocess.run(f"rm -r data/binned_outputs", shell=True, check=True)
