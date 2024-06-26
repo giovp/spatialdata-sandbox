@@ -23,19 +23,19 @@ sdata = xenium(
     path=str(path_read),
     n_jobs=8,
     # images
-    morphology_mip=False,
+    morphology_mip=True,
     # morphology_focus=False,
     # labels
     cell_labels=False,
     nucleus_labels=False,
     # shapes
-    cell_boundaries=False,
+    cell_boundaries=True,
     nucleus_boundaries=False,
-    cells_as_circles=False,
+    cells_as_circles=True,
     # points
-    # transcripts=False,
+    transcripts=True,
     # table
-    cells_table=False,
+    cells_table=True,
 )
 print(sdata)
 print("done")
