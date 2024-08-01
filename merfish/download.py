@@ -5,6 +5,8 @@
 # not found (use os.chdir(<project root path>)
 
 ##
+from utils import download
+
 import pandas as pd
 import numpy as np
 import anndata as ad
@@ -20,8 +22,6 @@ from pathlib import Path
 import sys
 from PIL import Image
 sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
-
-from utils import download
 
 plt.style.use("dark_background")
 
