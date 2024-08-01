@@ -5,6 +5,12 @@
 # not found (use os.chdir(<project root path>)
 
 ##
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
+
 from utils import download
 
 import pandas as pd
@@ -13,15 +19,11 @@ import anndata as ad
 import json
 import matplotlib
 import matplotlib.pyplot as plt
-import os
 import shutil
 import math
 import datashader
 import imageio
-from pathlib import Path
-import sys
 from PIL import Image
-sys.path.insert(1, os.path.join(sys.path[0], Path(__file__).parent.parent.resolve()))
 
 plt.style.use("dark_background")
 
