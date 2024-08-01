@@ -24,6 +24,7 @@ sdata = xenium(
     cell_boundaries=True,
     nucleus_boundaries=True,
     morphology_focus=True,
+    cells_as_circles=True,
 )
 print("done")
 
