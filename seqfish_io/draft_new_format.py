@@ -1,4 +1,4 @@
-# this script helps a user read his seqfish data, which are formatted in a newer version that introduced some changes to the initial format
+# this script helps a user read his seqfish data, which seems to be formatted with a newer (or older?) version that manifests some changes to the format supported in spatialdata-io
 # the labels are not parsed because the download of the labels data took too long so I could not test it
 # see discussion here: https://github.com/scverse/spatialdata-io/issues/193
 
