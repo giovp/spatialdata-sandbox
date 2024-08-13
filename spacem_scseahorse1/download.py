@@ -2,10 +2,10 @@
 import os
 import subprocess
 
-URL = "TODO",
+URL = "https://s3.embl.de/spatialdata/raw_data/20220121_ScSeahorse1.small.zip"
 
 os.chdir(os.path.dirname(__file__))
-command = f"curl {url} --output 'data.zip'"
+command = f"curl {URL} --output 'data.zip'"
 subprocess.run(command, shell=True, check=True)
-subprocess.run("unzip -f -o data.zip", shell=True, check=True)
+subprocess.run("unzip -o data.zip", shell=True, check=True)
 subprocess.run("mv spatialdata.zarr data.zarr", shell=True, check=True)
