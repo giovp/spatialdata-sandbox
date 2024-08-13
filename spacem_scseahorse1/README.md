@@ -28,4 +28,4 @@ The data consist of the following items:
 
 The dataset is already natively in SpatialData 0.1.2 format.
 
-Download the data with `download.py`, (`write_zarr.py` exists solely for consistency).
+Download the data with `download.py`, (`to_zarr.py` exists solely for consistency).
