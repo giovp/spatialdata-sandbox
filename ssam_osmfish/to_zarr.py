@@ -5,7 +5,9 @@ import h5py
 import scanpy as sc
 import spatialdata as sd
 import anndata as ad
+import dask.dataframe as dd
 
+##Before run this file, SSAM should be runned by to_zarr_with_plots.ipynb
 ds = ssam.SSAMDataset("data/processed/ssamdataset-osmFISH.zarr")
 analysis = ssam.SSAMAnalysis(ds, ncores=40, verbose=True)
 
@@ -37,43 +39,30 @@ with h5py.File("./data/raw/mRNA_coords_raw_counting.hdf5", 'r') as f:
 # Create a pandas DataFrame
 df = pd.DataFrame(data_list, columns=['gene', 'x', 'y']).set_index('gene')
 
+# Convert the DataFrame to a Dask DataFrame
+dask_df = dd.from_pandas(df, npartitions=2) 
+single_molecule = sd.models.PointsModel.parse(dask_df)
+
 analysis.compute_cell_by_gene_matrix(df)
-new_element = [0 for i in range(len(ds.genes))]
-cell_by_gene_matrix = np.insert(ds.cell_by_gene_matrix, 0, new_element, axis=0)
-
-cell_type = [0]
-for i in range(len(cell_by_gene_matrix)-1):
+cell_type = []
+for i in range(len(ds.cell_by_gene_matrix)):
     cell_type.append(int(np.unique(ds.watershed_celltype_maps[ds.watershed_segments == i]))+1)
+domain = []
 
-main_domain = [0]
-secondary_domain = [0]
-additional_domains = [0]
+unique_domains  = [np.unique(ds.inferred_domains[ds.watershed_segments == i], return_counts=True) for i in range(len(ds.cell_by_gene_matrix))]
 
-unique_domains = [np.unique(ds.inferred_domains[ds.watershed_segments == i]) for i in range(len(cell_by_gene_matrix) - 1)]
-
-for k in unique_domains:
-    if len(k) == 1:
-        main_domain.append(k[0] + 1)
-        secondary_domain.append(k[0] + 1)
-        additional_domains.append(0)
-    elif len(k) == 2:
-        main_domain.append(k[0] + 1)
-        secondary_domain.append(k[1] + 1)
-        additional_domains.append(0)
-    elif len(k) > 2:
-        main_domain.append(k[0] + 1)
-        secondary_domain.append(k[1] + 1)
-        additional_domains.append(list(k[2:] + 1))
-     
-
-table = sc.AnnData(cell_by_gene_matrix)
+for unique_values, counts in unique_domains:
+    max_count_index = np.argmax(counts)
+    most_frequent_value = unique_values[max_count_index]
+    domain.append(most_frequent_value)
+    
+table = sc.AnnData(ds.cell_by_gene_matrix)
 
 table.var_names = ds.genes
-table.obs["region"] = ["watershed_segments" for i in range(len(cell_by_gene_matrix))]
-table.obs['cell_id'] = np.arange(len(cell_by_gene_matrix))+1
+table.obs["region"] = ["watershed_segments" for i in range(len(ds.cell_by_gene_matrix))]
+table.obs['cell_id'] = np.arange(len(ds.cell_by_gene_matrix))+1
 table.obs['cell_type'] = np.array(cell_type)
-table.obs['main_domain'] = np.array(main_domain)
-table.obs['secondary_domain'] = np.array(secondary_domain)
+table.obs['domain'] = np.array(domain)+1
 
 expression = sd.models.TableModel.parse(
     adata=table,
@@ -82,11 +71,10 @@ expression = sd.models.TableModel.parse(
     instance_key="cell_id",
 )
 
-celltype_maps = sd.models.Image2DModel.parse(ds.celltype_maps[::-1], dims=('x', 'y', 'c'))
-filtered_celltype_maps = sd.models.Image2DModel.parse(ds.filtered_celltype_maps[::-1], dims=('x', 'y', 'c'))
-watershed_segments = sd.models.Labels2DModel.parse(ds.watershed_segments[::-1]+1, dims=('x', 'y'))
-inferred_domains = sd.models.Labels2DModel.parse(np.squeeze(ds.inferred_domains[::-1]+1), dims=('x', 'y'))
-inferred_domains_cells = sd.models.Labels2DModel.parse(np.squeeze(ds.inferred_domains_cells[::-1]+1), dims=('x', 'y'))
+celltype_maps = sd.models.Image2DModel.parse(ds.celltype_maps, dims=( 'x', 'y' ,'c'))
+filtered_celltype_maps = sd.models.Image2DModel.parse(ds.filtered_celltype_maps, dims=('x', 'y','c'))
+watershed_segments = sd.models.Labels2DModel.parse(ds.watershed_segments+1, dims=('x', 'y'))
+inferred_domains = sd.models.Labels2DModel.parse(np.squeeze(ds.inferred_domains)+1, dims=('x', 'y'))
 
-sdata = sd.SpatialData(images = {'celltype_maps': celltype_maps, 'filtered_celltype_maps': filtered_celltype_maps},labels={'watershed_segments': watershed_segments,'inferred_domains': inferred_domains, 'inferred_domains_cells': inferred_domains_cells},table=expression)
+sdata = sd.SpatialData(points={"single_molecule": single_molecule}, images = {'celltype_maps': celltype_maps, 'filtered_celltype_maps': filtered_celltype_maps},labels={'watershed_segments': watershed_segments,'inferred_domains': inferred_domains, 'inferred_domains_cells': inferred_domains_cells},table=expression)
 sdata.write('data.zarr') 
