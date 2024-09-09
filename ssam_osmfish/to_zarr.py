@@ -7,7 +7,6 @@ import spatialdata as sd
 import anndata as ad
 import dask.dataframe as dd
 
-##Before run this file, SSAM should be runned by to_zarr_with_plots.ipynb
 ds = ssam.SSAMDataset("data/processed/ssamdataset-osmFISH.zarr")
 analysis = ssam.SSAMAnalysis(ds, ncores=40, verbose=True)
 
@@ -77,4 +76,4 @@ watershed_segments = sd.models.Labels2DModel.parse(ds.watershed_segments+1, dims
 inferred_domains = sd.models.Labels2DModel.parse(np.squeeze(ds.inferred_domains)+1, dims=('x', 'y'))
 
 sdata = sd.SpatialData(points={"single_molecule": single_molecule}, images = {'celltype_maps': celltype_maps, 'filtered_celltype_maps': filtered_celltype_maps},labels={'watershed_segments': watershed_segments,'inferred_domains': inferred_domains, 'inferred_domains_cells': inferred_domains_cells},table=expression)
-sdata.write('data.zarr') 
+sdata.write('data.zarr')
