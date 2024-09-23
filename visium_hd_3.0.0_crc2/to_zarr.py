@@ -21,6 +21,8 @@ sdata = visium_hd(
     bin_size=8
 )
 
+sdata = sdata.filter_by_coordinate_system("downscaled_hires")
+
 ##
 if path_write.exists():
     shutil.rmtree(path_write)
