@@ -14,4 +14,4 @@ data_dir.mkdir(parents=True, exist_ok=True)
 zip_path = data_dir / "mouseLiver.zarr.zip"
 subprocess.run(["curl", "-o", zip_path, url], check=True)
 
-rint("Download complete.")
+print("Download complete.")
