@@ -12,7 +12,7 @@ data_dir.mkdir(parents=True, exist_ok=True)
 
 # Download the dataset
 zip_path = data_dir / "mouseLiver.zarr.zip"
-# subprocess.run(["curl", "-o", zip_path, url], check=True)
+subprocess.run(["curl", "-o", zip_path, url], check=True)
 
 # Unzip the dataset into the extraction directory
 subprocess.run(["unzip", "-o", zip_path, "-d", '.'], check=True)
