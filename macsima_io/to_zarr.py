@@ -11,7 +11,8 @@ path = Path().resolve()
 if not str(path).endswith("macsima_io"):
     path /= "macsima_io"
     assert path.exists()
-path_read = path / "data/Lung_adc_demo"
+# path_read = path / "data/Lung_adc_demo"
+path_read = path/ "data/MACSimaData_HCA"
 path_write = path / "data.zarr"
 ##
 sdata = macsima(path_read, subset=1000)
