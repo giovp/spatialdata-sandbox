@@ -9,8 +9,8 @@ import shutil
 ##
 path = Path().resolve()
 # luca's workaround for pycharm
-if not str(path).endswith("visium_hd_3.0.0_io"):
-    path /= "visium_hd_3.0.0_io"
+if not str(path).endswith("visium_hd_3.1.1_io"):
+    path /= "visium_hd_3.1.1_io"
     assert path.exists()
 path_read = path / "data"
 path_write = path / "data.zarr"
@@ -19,7 +19,7 @@ path_write = path / "data.zarr"
 sdata = visium_hd(
     path_read,
     load_all_images=True,
-    fullres_image_file="data/Visium_HD_Mouse_Small_Intestine_tissue_image.btf",
+    # fullres_image_file="Visium_HD_Mouse_Small_Intestine_tissue_image.btf",
     # bin_size=[2, 16]
 )
 
