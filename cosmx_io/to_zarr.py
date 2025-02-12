@@ -13,6 +13,9 @@ if not str(path).endswith("cosmx_io"):
     path /= "cosmx_io"
     assert path.exists()
 path_read = path / "data/data_lung5_rep2"
+
+# variation on the dataset in download.py, from here: https://github.com/scverse/spatialdata-io/issues/272#issue-2836388176
+# path_read = "/Users/macbook/ssd/biodata/cosmx/2025 download/Lung5_Rep1/Lung5_Rep1-Flat_files_and_images"
 path_write = path / "data.zarr"
 ##
 sdata = cosmx(path_read)
