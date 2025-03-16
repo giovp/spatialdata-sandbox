@@ -34,6 +34,7 @@ class TestToZarrScripts:
             "xenium_1.6.0_io/to_zarr.py",
             "xenium_1.7.0_io/to_zarr.py",
             "xenium_2.0.0_io/to_zarr.py",
+            "xenium_3.0.0_io/to_zarr.py",
         ],
     )
     def test_xenium_to_zarr_scripts(self, script):
