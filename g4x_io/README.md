@@ -19,5 +19,6 @@ Download and convert a sample dataset from the Singular Genomics G4X Platform to
   - `table`: the cell by gene expression count matrix with cell metadata
 
 ### Download
-1. Download data into a `data` directory with `download.py`
+1. Make a folder `g4x_io` and cd into it.
+1. Download sample dataset with `download.py`
 3. Convert the data into the SpatialData format with `to_zarr.py`

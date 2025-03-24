@@ -3,13 +3,12 @@ import os
 from pathlib import Path
 import subprocess
 
-# from https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-skin
+# Singular Genomics sample data
 
 urls = [
-    "curl -O https://...zip"
+    "https://singular-public-repo.s3.us-west-1.amazonaws.com/g4x_tutorial_dataset.zip"
 ]
 
-##
 # download the data
 for url in urls:
     filename = Path(url).name
@@ -20,7 +19,7 @@ for url in urls:
 ##
 # unzip the data
 subprocess.run(
-    f"unzip -o data/....zip -d data/",
+    "unzip -o data/g4x_tutorial_dataset.zip -d data/",
     shell=True,
     check=True,
 )
