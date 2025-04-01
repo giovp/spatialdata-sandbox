@@ -95,6 +95,7 @@ plt.show()
 
 ## alternative 2: as above, but using the spatialdata_io APIs as a shorthand and only
 # reading it in memory
+# note: the approaches shown here below are recent and still experimental; please report eventual bugs
 from spatialdata_io import generic
 
 image = generic("image.png", data_axes=("y", "x", "c"))
