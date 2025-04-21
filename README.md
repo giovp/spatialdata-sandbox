@@ -2,7 +2,10 @@
 
 # spatialdata-sandbox
 
-The respository contains scripts to convert common formats into the `SpatialData` storage format. To learn more about the storage format, please see the [SpatialData design document](https://spatialdata.scverse.org/en/latest/design_doc.html). You can download the datasets [here](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/datasets/README.html).
+The respository contains scripts to convert common formats into the `SpatialData`
+storage format. To learn more about the storage format, please see the [SpatialData
+design document](https://spatialdata.scverse.org/en/stable/design_doc.html). You can
+download the datasets [here](https://spatialdata.scverse.org/en/stable/tutorials/notebooks/datasets/README.html).
 
 ## How to add datasets
 
