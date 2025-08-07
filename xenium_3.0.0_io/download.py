@@ -6,9 +6,9 @@ import subprocess
 # from https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-skin
 
 urls = [
-    "curl -O https://cf.10xgenomics.com/samples/xenium/3.0.0/Xenium_Prime_Human_Skin_FFPE/Xenium_Prime_Human_Skin_FFPE_outs.zip"
+    "https://cf.10xgenomics.com/samples/xenium/3.0.0/Xenium_Prime_Human_Skin_FFPE/Xenium_Prime_Human_Skin_FFPE_outs.zip"
 ]
-
+print('current working directory', os.getcwd())
 ##
 # download the data
 for url in urls:
