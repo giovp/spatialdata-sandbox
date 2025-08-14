@@ -38,7 +38,7 @@ img = iio.imread(path_read / "image.png")
 img = np.expand_dims(img, axis=0)
 img = Image2DModel.parse(img, dims=("c", "y", "x"), transformations={'global': composed})
 ##
-annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"])})
+annotations = pd.DataFrame({"cell_type": pd.Categorical(adata.obsm["cell_type"].ravel())})
 single_molecule = PointsModel.parse(adata.X, annotation=annotations, feature_key="cell_type")
 
 expression = cells.copy()

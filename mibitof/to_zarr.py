@@ -21,7 +21,7 @@ libraries = ["point8", "point16", "point23"]
 
 table_list = []
 for lib in libraries:
-    table = ad.read(path_read / f"{lib}_table.h5ad")
+    table = ad.read_h5ad(path_read / f"{lib}_table.h5ad")
     table.obs["library_id"] = f"{lib}_labels"
     table_list.append(table)
 

@@ -21,10 +21,10 @@ print("parsing the data... ", end="")
 sdata = xenium(
     path=str(path_read),
     n_jobs=8,
-    cell_boundaries=True,
-    nucleus_boundaries=True,
+    cell_boundaries=False,
+    nucleus_boundaries=False,
     morphology_focus=True,
-    cells_as_circles=True,
+    cells_as_circles=False,
 )
 print("done")
 
