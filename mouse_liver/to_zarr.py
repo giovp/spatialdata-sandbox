@@ -16,13 +16,9 @@ des_path = Path('data.zarr')
 sdata = sd.read_zarr(src_path)
 print(sdata)
 
-if src_path.exists():
+if des_path.exists():
     shutil.rmtree(des_path)
 
 sdata.write(des_path)
-
-# cleanup
-if src_path.exists():
-    shutil.rmtree(src_path)
 
 print("Write to Zarr complete.")
