@@ -74,7 +74,6 @@ bb.y1 = 6566
 ##
 # extract single molecule (points) data
 df = pd.read_csv(raw / "Allen_MERFISH_spots_with_anatomy.csv")
-plt.figure(figsize=(10, 10))
 points_bb = bb
 df = df[
     (df["x_um"] > points_bb.x0)
