@@ -35,19 +35,25 @@ sdataST8059050 = visium(
 # "downscaled_lowres", which is not needed.
 # NOTE: in future version of the Visium reader only one coordinate system will be used, containing all the images. We
 # are keeping the three coordinate systems for legacy reasons for the time being.
-for sdata in [sdataST8059048, sdataST8059050]:
-    for el in sdata._gen_spatial_element_values():
-        for cs_name in ["global", "downscaled_lowres"]:
-            if cs_name in sd.transformations.get_transformation(el, get_all=True):
-                sd.transformations.remove_transformation(el, cs_name)
+
+for el in sdataST8059048._gen_spatial_element_values():
+    for cs_name in ["ST8059048", "ST8059048_downscaled_lowres"]:
+        if cs_name in sd.transformations.get_transformation(el, get_all=True):
+            sd.transformations.remove_transformation(el, cs_name)
+
+for el in sdataST8059050._gen_spatial_element_values():
+    for cs_name in ["ST8059050", "ST8059050_downscaled_lowres"]:
+        if cs_name in sd.transformations.get_transformation(el, get_all=True):
+            sd.transformations.remove_transformation(el, cs_name)
+
 
 # we want to concatenate the two datasets, but they have the same coordinate system names; therefore let's rename
 # the each coordinate system to match the dataset id 
 sdataST8059048.rename_coordinate_systems(
-    {"downscaled_hires": "ST8059048"}
+    {"ST8059048_downscaled_hires": "ST8059048"}
 )
 sdataST8059050.rename_coordinate_systems(
-    {"downscaled_hires": "ST8059050"}
+    {"ST8059050_downscaled_hires": "ST8059050"}
 )
 sdata = sd.concatenate([sdataST8059048, sdataST8059050], concatenate_tables=True)
 print(sdata)
