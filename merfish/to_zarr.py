@@ -66,7 +66,7 @@ polygons = ShapesModel.parse(
 
 ##
 sdata = SpatialData(
-    table=expression,
+    tables={'table': expression},
     shapes={"cells": regions, "anatomical": polygons},
     points={"single_molecule": single_molecule},
     images={"rasterized": img},
