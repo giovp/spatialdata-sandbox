@@ -18,10 +18,10 @@ path_write = path / "data.zarr"
 ##
 sdata = visium_hd(
     path_read,
-
-    # load_all_images=True,
-    # fullres_image_file="Visium_HD_Mouse_Small_Intestine_tissue_image.btf",
-    # bin_size=[2, 16]
+    load_segmentations_only=True,
+    # needed for centroids but otherwise don't have to load nuclei
+    # Will increase load time as matrix is calculated from the 2um binned data
+    load_nucleus_segmentations=True,
 )
 
 ##
