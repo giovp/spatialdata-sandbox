@@ -60,7 +60,7 @@ table.obs['donor'] = table.obs['donor'].astype('category')
 table.obs['batch'] = table.obs['batch'].astype('category')
 
 sdata = SpatialData(
-    table=table,
+    tables={'table': table},
     labels=labels,
     images=images,
 )
