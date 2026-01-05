@@ -17,4 +17,4 @@ subprocess.run(command, shell=True, check=True)
 
 ##
 # unzip the data
-subprocess.run(f'unzip data/{filename} -d data/xenium', shell=True, check=True)
+subprocess.run(f'unzip -o data/{filename} -d data/xenium', shell=True, check=True)

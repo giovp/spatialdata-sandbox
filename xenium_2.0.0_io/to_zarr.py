@@ -38,4 +38,5 @@ print("done")
 ##
 sdata = sd.SpatialData.read("./data.zarr/")
 print(sdata)
+print(sdata['transcripts']['feature_name'].compute())
 ##

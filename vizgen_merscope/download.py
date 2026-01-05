@@ -11,7 +11,7 @@ def main():
 
     command = f"curl {URL} --output '{zip_path}'"
     subprocess.run(command, shell=True, check=True)
-    subprocess.run(f"unzip -f {zip_path} -d {folder_path}", shell=True, check=True)
+    subprocess.run(f"unzip -o {zip_path} -d {folder_path}", shell=True, check=True)
 
 
 if __name__ == "__main__":
