@@ -14,11 +14,10 @@ ARCHIVE_URL = f"https://zenodo.org/api/records/{ZENODO_RECORD}/files-archive"
 ARCHIVE_FILENAME = "OMAP23.zip"
 
 # Sample files to download when DOWNLOAD_SAMPLE_ONLY is True
-# the Zenodo dataset also contains a single .png file and, while all files have extension
-# .ome.tiff, there is a file with extension .tif. Let's download these cases to cover
-# the general case
+# Most images are .ome.tiff, but there is a file with extension .tif. 
+# Let's download this case to cover both cases.
+# The single .png image is just as a cover image for Zenodo and not representative.
 SAMPLE_FILES = [
-    "A_OMAP_23.png",
     "OMAP23_DAPI_01.ome.tif",
     "OMAP23_CD3E.ome.tif",
     "OMAP23_FoxP3.tif",
