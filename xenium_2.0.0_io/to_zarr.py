@@ -20,11 +20,11 @@ path_write = path / "data.zarr"
 print("parsing the data... ", end="")
 sdata = xenium(
     path=str(path_read),
-    n_jobs=8,
     cell_boundaries=True,
     nucleus_boundaries=True,
     morphology_focus=True,
     cells_as_circles=True,
+#    cleanup_labels_zarr_tmpdir=False,
 )
 print("done")
 
