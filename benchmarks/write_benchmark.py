@@ -5,7 +5,11 @@
 # `asv run HEAD` iterates ALL commits reachable from HEAD (~188 commits),
 # running hundreds of benchmarks instead of the intended 2.
 #
-# Show results in the terminal (both environments side by side):
+# To also benchmark the locally installed spatialdata (e.g. a dev branch),
+# run a second pass using the existing environment (no commit range allowed):
+#   asv run --config xenium_2.0.0_io/asv.conf.json --environment existing:python3.13
+#
+# Show results in the terminal (all environments side by side):
 #   asv show --config xenium_2.0.0_io/asv.conf.json HEAD
 #
 # Build and serve an interactive HTML report:
@@ -43,6 +47,17 @@ class XeniumWriteSuite:
                 "Run download.py first."
             )
         self.sdata = spatialdata_io.xenium(
+            cells_boundaries = False,
+            nucleus_boundaries = False,
+            cells_as_circles = False,
+            cells_labels = False,
+            nucleus_labels = False,
+            transcripts = False,
+            morphology_mip = False,
+            morphology_focus = True,
+            aligned_images = False,
+            cells_table = False,
+            gex_only = False,
             path=str(DATA_PATH),
         )
         self._tmpdir = tempfile.TemporaryDirectory(prefix="asv_xenium_write_")
