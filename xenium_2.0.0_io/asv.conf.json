@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "project": "spatialdata-sandbox",
+    "project_url": "https://github.com/scverse/spatialdata",
+    "repo": "..",
+    "branches": ["main"],
+    "build_command": [],
+    "install_command": [],
+    "benchmark_dir": "../benchmarks",
+    "environment_type": "virtualenv",
+    "matrix": {
+        "spatialdata": ["0.7.2", "0.7.3a0"],
+        "spatialdata-io": ["0.6.0"]
+    },
+    "benchmark_timeout": 600
+}
