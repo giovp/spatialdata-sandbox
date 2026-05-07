@@ -13,7 +13,7 @@ if not str(path).endswith("atera_breast_cancer_io"):
     path /= "atera_breast_cancer_io"
     assert path.exists()
 
-path_read = path / "data"
+path_read = path / "data" / "WTA_Preview_FFPE_Breast_Cancer_outs"
 path_write = path / "data.zarr"
 
 ##

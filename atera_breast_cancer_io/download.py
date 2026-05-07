@@ -7,7 +7,7 @@ import subprocess
 
 urls = [
     "https://s3-us-west-2.amazonaws.com/10x.files/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_outs.zip",
-    "https://s3-us-west-2.amazonaws.com/10x.files/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_xe_outs.zip",
+    # "https://s3-us-west-2.amazonaws.com/10x.files/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_xe_outs.zip",
     "https://cf.10xgenomics.com/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv",
     "https://cf.10xgenomics.com/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_he_image.ome.tif",
     "https://cf.10xgenomics.com/samples/atera/dev/WTA_Preview_FFPE_Breast_Cancer/WTA_Preview_FFPE_Breast_Cancer_he_alignment.csv",
@@ -19,7 +19,7 @@ print('current working directory', os.getcwd())
 os.makedirs("data", exist_ok=True)
 for url in urls:
     filename = Path(url).name
-    command = f"curl -L -o {'data/' + filename} {url}"
+    command = f"curl -L -C - -o {'data/' + filename} {url}"
     subprocess.run(command, shell=True, check=True)
 
 ##
@@ -29,8 +29,8 @@ subprocess.run(
     shell=True,
     check=True,
 )
-subprocess.run(
-    f"unzip -o data/WTA_Preview_FFPE_Breast_Cancer_xe_outs.zip -d data/",
-    shell=True,
-    check=True,
-)
+# subprocess.run(
+#     f"unzip -o data/WTA_Preview_FFPE_Breast_Cancer_xe_outs.zip -d data/",
+#     shell=True,
+#     check=True,
+# )

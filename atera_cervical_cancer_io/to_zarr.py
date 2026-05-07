@@ -10,7 +10,7 @@ import shutil
 path = Path().resolve()
 # luca's workaround for pycharm
 if not str(path).endswith("atera_cervical_cancer_io"):
-    path /= "atera_cervical_cancer_io"
+    path /= "atera_cervical_cancer_io" / "WTA_Preview_FFPE_Cervical_Cancer_outs"
     assert path.exists()
 
 path_read = path / "data"
