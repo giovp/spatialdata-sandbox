@@ -31,18 +31,17 @@ sdataST8059050 = visium(
 # Each SpatialData object has 3 coordinate systems: 'global', 'downscaled_hires' and 'downscaled_lowres'.
 # Visium datasets generally are available with images (lowres and hires) and sometimes also a "full resolution" image,
 # which has an even greater resolution than the hires image. This dataset doesn't contain a full resolution image, so
-# let's drop the coordinate system "global", which would otherwise contain it. Let's also drop the coordinate system
-# "downscaled_lowres", which is not needed.
+# let's drop the coordinate system "global", which would otherwise contain it.
 # NOTE: in future version of the Visium reader only one coordinate system will be used, containing all the images. We
 # are keeping the three coordinate systems for legacy reasons for the time being.
 
 for el in sdataST8059048._gen_spatial_element_values():
-    for cs_name in ["ST8059048", "ST8059048_downscaled_lowres"]:
+    for cs_name in ["ST8059048"]:
         if cs_name in sd.transformations.get_transformation(el, get_all=True):
             sd.transformations.remove_transformation(el, cs_name)
 
 for el in sdataST8059050._gen_spatial_element_values():
-    for cs_name in ["ST8059050", "ST8059050_downscaled_lowres"]:
+    for cs_name in ["ST8059050"]:
         if cs_name in sd.transformations.get_transformation(el, get_all=True):
             sd.transformations.remove_transformation(el, cs_name)
 
