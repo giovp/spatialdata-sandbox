@@ -38,7 +38,7 @@ if __name__ == "__main__":
         "http://linnarssonlab.org/osmFISH/osmFISH_SScortex_mouse_all_cells.loom",
         "https://storage.googleapis.com/linnarsson-lab-www-blobs/blobs/osmFISH/data/mRNA_coords_raw_counting.hdf5",
         "https://storage.googleapis.com/linnarsson-lab-www-blobs/blobs/osmFISH/data/polyT_seg.pkl",
-        "https://s3.embl.de/spatialdata/raw_data/im_nuc_small.pickle"
+        "https://exampledata.scverse.org/spatialdata/raw_data/im_nuc_small.pickle"
     ]
 
     p_urls = [

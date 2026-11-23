@@ -2,7 +2,7 @@
 import os
 import subprocess
 
-URL = "https://s3.embl.de/spatialdata/raw_data/20220121_ScSeahorse1.small.zip"
+URL = "https://exampledata.scverse.org/spatialdata/raw_data/20220121_ScSeahorse1.small.zip"
 
 os.chdir(os.path.dirname(__file__))
 command = f"curl {URL} --output 'data.zip'"
