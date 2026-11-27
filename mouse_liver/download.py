@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 
 # URL of the dataset
-url = "https://s3.embl.de/spatialdata/raw_data/mouseLiver.zarr.zip"
+url = "https://exampledata.scverse.org/spatialdata/raw_data/mouseLiver.zarr.zip"
 
 # Create the data directory if it doesn't exist
 data_dir = Path("data")
